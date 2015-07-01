@@ -1,0 +1,4 @@
+#Игнорировать папку bower_components
+bower_components/*
+#Игнорировать папку node_modules
+node_modules/*
