@@ -60,17 +60,21 @@ $.material.init();
 
 			function authCallback(authData){
 				if(authData){
-					var userRef = ref.child('users').child(authData.uid);
+					var userRef = ref.child('users').child(authData.uid); // по user id получаем ссылку на пользователя из БД
 					var user = $firebaseObject(userRef);
-					user.$loaded().then(function(){
-						$rootScope.currentUser = user;
+					user.$loaded().then(function(){ //когда пользователь загружен
+						$rootScope.currentUser = user; // помещаем его в rootScope
 					});
 				}else{
 					$rootScope.currentUser = null;
 				}	
 			}
-
-			ref.onAuth(authCallback);
+			/*
+				когда пользователь залогинен firebase генерирует событие onAuth 
+				которое обрабатывается ф-цией authCallback, в которую приходит
+				авторизационные данные
+			*/
+			ref.onAuth(authCallback); 
 
 			function authHandle(error, authData){
 				if(error){
@@ -80,12 +84,58 @@ $.material.init();
 				}
 			}
 
+			socialAuthHandle.$inject = ['$firebaseObject'];
+
+
+
+			function socialAuthHandle(error, authData){
+				if(error){
+					console.log('social-login failed!', error);
+				}else{
+					console.log('social-login successfuly!', authData);
+					var userRef = ref.child('users').child(authData.google.id);
+					var user = $firebaseObject(userRef);
+					user.$loaded(function(){ 
+						if(user.email){
+							userRef.child('lastActivity').set(Firebase.ServerValue.TIMESTAMP);
+						}else{
+							userRef.set({
+								'email': authData.google.email,
+								'name': authData.google.displayName,
+								'avatar': authData.google.cachedUserProfile.picture,
+								'id': authData.google.id,
+								'token': authData.token,
+								'uid': authData.uid,
+								'expires': authData.expires,
+								'accessToken': authData.google.accessToken,
+								'lastActivity': Firebase.ServerValue.TIMESTAMP
+							});
+						}
+
+					});
+				}
+			}
+
 			var	authObj = {
+
+				googleLogin: function(_user, authHndl){
+					
+					authHndl = typeof authHndl !== 'undefined' ? authHndl : socialAuthHandle;
+					ref.authWithOAuthPopup("google", authHndl, {
+						scope: "profile,\
+								email"
+					});
+				},
 
 				login: function(_user, authHndl){
 					authHndl = typeof authHndl !== 'undefined' ? authHndl : authHandle;
-
-					ref.authWithPassword(_user, authHndl);
+					auth.$authWithPassword(_user)
+						.then(function(authData){
+							authHndl(authData);
+						})
+						.catch(function(error){
+							console.log("Login whith error ", error);
+						})
 				},
 
 				logout: function(){
@@ -107,12 +157,12 @@ $.material.init();
 						return ref.getAuth().password.email;
 					return null;
 				},
-				register: function(_user){
+				register: function(_user){ //создаем нового пользователя
 					return auth.$createUser({
 						email: _user.email,
 						password: _user.password
 					})
-					.then(function(userData){
+					.then(function(userData){ // создаем запись в БД под нового п.
 					var	userRef = ref.child('users').child(userData.uid);
 						userRef.set({
 							firstname: _user.firstname,
@@ -244,29 +294,6 @@ angular
 	}
 })();
 ;(function(){
-'use strict'
-
-angular
-	.module('GymJournal.contact', ['ngRoute'])
-	.config( configContact )
-	.controller('ContactCtrl', ContactCtrl);
-	
-	ContactCtrl.$inject = ['$scope', '$rootScope'];
-	
-	function ContactCtrl($scope, $rootScope){
-		$scope.title = 'Contact';
-		$rootScope.curPath = 'contact';
-	}
-	
-	function configContact($routeProvider){
-		$routeProvider
-			.when('/contact', {
-				templateUrl: 'app/contact/contact.html',
-				controller: 'ContactCtrl'
-			});
-	}
-})();
-;(function(){
 	'use strict'
 
 angular
@@ -385,6 +412,10 @@ function AuthController($scope, $log, $cookies, authentication){
 
 	vm.register = function(){
 		authentication.register(vm.newUser);
+	}
+
+	vm.googleLogin = function(){
+		authentication.googleLogin();
 	}
 	/*vm.login = function(){
 		$log.debug('Login');
@@ -529,6 +560,29 @@ angular
 			.when('/statistics', {
 				templateUrl: 'app/statistics/statistics.html',
 				controller: 'StatisticCtrl'
+			});
+	}
+})();
+;(function(){
+'use strict'
+
+angular
+	.module('GymJournal.contact', ['ngRoute'])
+	.config( configContact )
+	.controller('ContactCtrl', ContactCtrl);
+	
+	ContactCtrl.$inject = ['$scope', '$rootScope'];
+	
+	function ContactCtrl($scope, $rootScope){
+		$scope.title = 'Contact';
+		$rootScope.curPath = 'contact';
+	}
+	
+	function configContact($routeProvider){
+		$routeProvider
+			.when('/contact', {
+				templateUrl: 'app/contact/contact.html',
+				controller: 'ContactCtrl'
 			});
 	}
 })();

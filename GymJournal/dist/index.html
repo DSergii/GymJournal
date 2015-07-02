@@ -46,7 +46,7 @@
 			<div id="main">
 				<div id="content">
 					<div class="row">
-						<div class="col-xs-12" ng-show="curPath == 'home'">
+						<div class="col-xs-12" ng-show="curPath == 'home' && signedIn()">
 							<h1>Готов тренироваться???</h1>
 						</div>
 						<div class="col-xs-12" ng-hide="signedIn()">
@@ -127,9 +127,9 @@
 					<h4 class="modal-title">Вход</h4>
 				</div>
 				<div class="modal-body">
-					<form role="form" name="loginForm" ng-submit="ac.login()">
+					<form role="form" name="loginForm">
 						<div class="form-group">
-							<label for="m-email">Логин</label>
+							<label for="m-email">Email</label>
 							<input type="email" class="form-control" id="m-email" placeholder="Введите ваш email" ng-model="ac.credentials.email">
 						</div>
 						<div class="form-group">
@@ -138,7 +138,8 @@
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
-							<button type="submit" class="btn btn-primary">Войти</button>
+							<button type="submit" class="btn btn-primary" ng-click="ac.login()">Войти</button>
+							<button type="submit" class="btn btn-primary" ng-click="ac.googleLogin()">Google</button>
 						</div>
 					</form>
 				</div>

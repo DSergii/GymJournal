@@ -53,6 +53,10 @@ function AuthController($scope, $log, $cookies, authentication){
 	vm.register = function(){
 		authentication.register(vm.newUser);
 	}
+
+	vm.googleLogin = function(){
+		authentication.googleLogin();
+	}
 	/*vm.login = function(){
 		$log.debug('Login');
 		Auth.login(vm.credentials.username, vm.credentials.password);
