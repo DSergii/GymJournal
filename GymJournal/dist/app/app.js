@@ -19,6 +19,7 @@ $.material.init();
 		'GymJournal.playlist',
 		'GymJournal.nutrition',
 		'GymJournal.login',
+		'GymJournal.timer',
 		])
 		.config(gymJournalConfig)
 		.constant('FIREBASE_URL', 'https://gymjournal.firebaseio.com/')
@@ -226,6 +227,10 @@ $.material.init();
 			});
 		};
 
+		this.getCurUser = function(_userid){
+			return usersRef.child(_userid);
+		}
+
 		this.addUser = function(_user){
 			var usersLength = $firebaseObject(ref.child('options').child('userLength'));
 			$log.debug(usersLength);
@@ -234,6 +239,13 @@ $.material.init();
 				usersLength.$save();
 				usersRef.child(uLength).set(_user);
 			});
+		};
+
+		// редактирование данных пользователя
+		this.updateUser = function(_userid, _userData){
+
+			usersRef.child( _userid ).set( _userData );
+
 		};
 
 		/* callback функция, возвращающая через промис объект из БД 
@@ -248,6 +260,46 @@ $.material.init();
 		});
 
 	}
+
+
+})();
+;(function(){
+'use strict'
+
+angular
+	.module('GymJournal.timer', [])
+	.controller('timerCtrl', timerCtrl);
+
+	function timerCtrl($scope){
+
+		var t = this;
+
+		t.min = 0;
+		t.sec = 0;
+		t.secc = 0;
+
+		t.flag = false;
+		// ДОРАБОТАТЬ НАПИЛЬНИКОМ
+		t.cur = function(){
+			t.min = Math.floor(t.time / 60);
+			t.sec = t.time % 60;
+			t.secc = t.time - t.sec;
+			if(t.time) t.flag = true;
+		}
+
+		t.start = function(){
+			var	timer = setInterval(function(){
+		        if(t.min > 0){
+		            t.min--;
+		        }else{
+		            t.secc--;
+		            if(t.secc == 0) clearInterval(timer);
+		        }
+		    },1000);
+		}
+
+	}
+
 
 
 })();
@@ -310,6 +362,14 @@ angular
 		$rootScope.curPath = 'exercises';
 
 		vm.authInfo = authentication.getAuth();
+
+		vm.exArr = [];
+		//тут надо сохранять в БД
+		vm.addExercise = function(_title){
+			vm.exArr.push({title:_title});
+		}
+
+
 	}
 
 	function ConfigExercicses($routeProvider){
@@ -526,18 +586,58 @@ angular
 	.config(ProfileConfig)
 	.controller('ProfileCtrl', ProfileCtrl);
 
-	ProfileCtrl.$inject = ['$scope', '$rootScope'];
+	ProfileCtrl.$inject = ['$scope', '$rootScope', 'authentication', 'gymfirebase', '$log', '$firebaseObject'];
 
-	function ProfileCtrl($scope, $rootScope){
-		$scope.title = 'Profile';
+	function ProfileCtrl($scope, $rootScope, authentication, gymfirebase, $log, $firebaseObject){
+		
+		var vm = this;
+
 		$rootScope.curPath = 'profile';
+
+		var curUserUid = authentication.getAuth().uid;
+
+		// gymfirebase.getUsers().then(function(_data){
+		// 	vm.users = _data;
+		// });
+
+		vm.user = {
+			name: null,
+			lastname: null,
+			email: null,
+			height: null,
+			weight: null,
+			image: null,
+			age: null
+		}
+		
+		vm.getUsername = function(){
+			return authentication.getUsername();
+		}
+
+		var userObj = gymfirebase.getCurUser(curUserUid);
+
+		var curUser = $firebaseObject(userObj);
+
+		vm.userData = '';
+
+		curUser.$loaded().then(function(){ //когда пользователь загружен
+			vm.userData  = curUser; 
+		});
+		
+		//изменяем данные пользователя на вход Uid в БД и данные из формы
+		vm.updateUser = function(){
+			return gymfirebase.updateUser(curUserUid, vm.user);
+		}
+		
+
 	}
 
 	function ProfileConfig($routeProvider){
 		$routeProvider
 			.when('/profile', {
 				templateUrl: 'app/profile/profile.html',
-				controller: 'ProfileCtrl'
+				controller: 'ProfileCtrl',
+				controllerAs: 'vm'
 			});
 	}
 })();

@@ -33,6 +33,10 @@
 			});
 		};
 
+		this.getCurUser = function(_userid){
+			return usersRef.child(_userid);
+		}
+
 		this.addUser = function(_user){
 			var usersLength = $firebaseObject(ref.child('options').child('userLength'));
 			$log.debug(usersLength);
@@ -41,6 +45,13 @@
 				usersLength.$save();
 				usersRef.child(uLength).set(_user);
 			});
+		};
+
+		// редактирование данных пользователя
+		this.updateUser = function(_userid, _userData){
+
+			usersRef.child( _userid ).set( _userData );
+
 		};
 
 		/* callback функция, возвращающая через промис объект из БД 

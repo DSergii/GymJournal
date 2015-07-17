@@ -15,6 +15,14 @@ angular
 		$rootScope.curPath = 'exercises';
 
 		vm.authInfo = authentication.getAuth();
+
+		vm.exArr = [];
+		//тут надо сохранять в БД
+		vm.addExercise = function(_title){
+			vm.exArr.push({title:_title});
+		}
+
+
 	}
 
 	function ConfigExercicses($routeProvider){

@@ -30,7 +30,15 @@ header{
 	color: #FFC125;
 	transition: color .5s;
 }
-.modal-header{margin-bottom:15px;}
+.modal-header
+{
+	margin-bottom:15px;
+	h4
+	{
+		font-size:24px;
+		line-height:30px;
+	}
+}
 .carousel-inner .item{
 	width:100%;
 	height:500px;
@@ -52,4 +60,46 @@ header{
 }
 .navbar-default.navbar{
 	border-radius:10px;
+}
+.hold-img{
+	width:100%;
+	height:250px;
+	border:1px solid #b4b4b4;
+	margin:0 0 10px;
+	img{
+		width:100%;
+		display:block;
+		height:auto;
+	}
+}
+.hold-info{
+	border:1px solid #b4b4b4;
+	min-height: 300px;
+	padding: 20px 10px;
+}
+.main-container{
+	position:relative;
+
+	.timer
+	{
+		position: absolute;
+		right:15px;
+		left:auto;
+		top:65px;
+		color: #f00;
+		text-decoration:none;
+
+	}
+}
+#timer
+{	
+	.clock
+	{
+		font-size:45px;
+		line-height:50px;
+	}
+	span.sec
+	{
+		color: #f00;
+	}
 }

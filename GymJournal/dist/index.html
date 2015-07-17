@@ -8,7 +8,8 @@
 		<base href="/">
 	</head>
 	<body>
-		<div class="container">
+		<div class="container main-container">
+			<a href="" data-toggle="modal" data-target="#timer"  class="timer">Задать таймер</a>
 			<header id="header">
 			<!--<strong class="logo pull-left">
 					<a href="#" class="mdi-hardware-keyboard-alt">&nbsp;</a>
@@ -36,7 +37,7 @@
 						<li ng-class="{'active' : curPath == 'nutrition'}" ng-show="signedIn()"><a href="#/nutrition">Nutrition</a></li>
 					</ul>
 					<ul class="nav navbar-nav navbar-right" >
-						<li><a href="">{{currentUser.firstname}} {{currentUser.lastname}}</a></li>
+						<li><a href="">{{currentUser.name}} {{currentUser.lastname}}</a></li>
 						<li><a href="" data-toggle="modal" data-target="#login-dialog" ng-hide="signedIn()" >Log in</a></li>
 						<li><a href="" ng-show="signedIn()" ng-click="sc.logout()">Logout</a></li>
 					</ul>
@@ -100,11 +101,11 @@
 				</div>
 			</div>
 		</div>
-			<div class="container">
-				<div ng-view>
-					
-				</div>
+		<div class="container">
+			<div ng-view>
+				
 			</div>
+		</div>
 	<!-- Others JS Files -->
 	<script src="libs/jquery/jquery.js"></script>
 	<script src="libs/bootstrap/js/bootstrap.js"></script>
@@ -174,6 +175,31 @@
 						<div class="modal-footer">
 							<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
 							<button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal" id="timer" ng-controller="timerCtrl as tc">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title text-center">Задайте таймер</h4>
+				</div>
+				<div class="modal-body">
+					<form role="form" name="">
+						<div class="form-group" ng-hide="tc.flag">
+							<input type="text" class="form-control" id="m-email" placeholder="Задайте время в секундах" ng-model="tc.time">
+						</div>
+						<div class="form-group text-center clock" ng-show="tc.flag">
+							<span class="min">{{tc.min}}</span> : <span class="sec">{{tc.secc}}</span>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-success" ng-click="tc.cur()">Задать</button>
+							<button type="button" class="btn btn-info" ng-click="tc.start()" >Старт</button>
+							<button type="button" class="btn btn-danger" >Стоп</button>
 						</div>
 					</form>
 				</div>
