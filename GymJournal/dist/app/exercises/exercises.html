@@ -2,16 +2,20 @@
 	<div class="row">
 		<div class="col-xs-6">
 			<h3>Мои упражнения</h3>
-			<div class="exers" ng-repeat="ex in ec.exArr">{{ex.title}}</div>
+			<div class="exers" >{{ex.exercises}}</div>
 		</div>
 		<div class="col-xs-6">
 			<h3 class="">Добавить упражнение</h3>
 			<form role="form">
 				<div class="form-group">
-					<label for="f-name">Название упражнения</label>
-					<input type="text" class="form-control" id="f-name" ng-model="ec.title">
+					<input type="text" class="form-control" placeholder="Название упражнения" id="f-name" ng-model="ec.exercises.title">
+					<textarea class="form-control" rows="3" placeholder="Описание упражнения" id="textArea" ng-model="ec.exercises.descr"></textarea>
+					<input type="text" class="form-control" placeholder="Ссылка на видео" id="link" ng-model="ec.exercises.link">
+					<input type="text" class="form-control" placeholder="Количество повторений в подходе" id="amount-in" ng-model="ec.exercises.amountIn">
+					<input type="text" class="form-control" placeholder="Количество подходов" id="amount" ng-model="ec.exercises.amount">
+					<input type="text" class="form-control" placeholder="Время выполнения" id="time" ng-model="ec.exercises.time">
 				</div>
-				<button type="button" class="btn btn-info" ng-click="ec.addExercise(ec.title)">Добавить</button>
+				<button type="button" class="btn btn-info" ng-click="ec.addExercise()">Добавить</button>
 			</form>
 		</div>
 	</div>

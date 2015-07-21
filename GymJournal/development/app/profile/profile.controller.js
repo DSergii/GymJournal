@@ -43,7 +43,7 @@ angular
 			vm.userData  = curUser; 
 		});
 		
-		//изменяем данные пользователя на вход Uid в БД и данные из формы
+		//изменяем данные пользователя, на вход Uid в БД и данные из формы
 		vm.updateUser = function(){
 			return gymfirebase.updateUser(curUserUid, vm.user);
 		}

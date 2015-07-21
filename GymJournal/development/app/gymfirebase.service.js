@@ -39,7 +39,7 @@
 
 		this.addUser = function(_user){
 			var usersLength = $firebaseObject(ref.child('options').child('userLength'));
-			$log.debug(usersLength);
+			//$log.debug(usersLength);
 			usersLength.$loaded(function(){
 				var uLength = usersLength.$value++;
 				usersLength.$save();

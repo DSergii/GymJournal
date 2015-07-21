@@ -47,8 +47,11 @@
 			<div id="main">
 				<div id="content">
 					<div class="row">
-						<div class="col-xs-12" ng-show="curPath == 'home' && signedIn()">
-							<h1>Готов тренироваться???</h1>
+						<div class="col-xs-12 text-center" ng-show="curPath == 'home' && signedIn()">
+							<h1>Выберите упражнение</h1>
+						</div>
+						<div class="col-xs-12">
+							
 						</div>
 						<div class="col-xs-12" ng-hide="signedIn()">
 							<div ng-show="curPath == 'home'" id="carousel-example-generic" class="carousel slide" data-ride="carousel">
@@ -194,12 +197,12 @@
 							<input type="text" class="form-control" id="m-email" placeholder="Задайте время в секундах" ng-model="tc.time">
 						</div>
 						<div class="form-group text-center clock" ng-show="tc.flag">
-							<span class="min">{{tc.min}}</span> : <span class="sec">{{tc.secc}}</span>
+							<span class="min">{{tc.min}}</span> : <span class="sec" ng-bind="tc.sec"></span>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-success" ng-click="tc.cur()">Задать</button>
-							<button type="button" class="btn btn-info" ng-click="tc.start()" >Старт</button>
-							<button type="button" class="btn btn-danger" >Стоп</button>
+							<button type="button" class="btn btn-info" ng-click="tc.start()">Старт</button>
+							<button type="button" class="btn btn-danger" ng-click="tc.stop()">Стоп</button>
 						</div>
 					</form>
 				</div>

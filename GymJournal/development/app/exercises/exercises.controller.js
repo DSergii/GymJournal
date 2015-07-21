@@ -9,17 +9,27 @@ angular
 
 	//ExercisesCtrl.$inject = ['$scope', '$rootScope'];
 
-	function ExercisesCtrl($scope, $rootScope, authentication){
+	function ExercisesCtrl($scope, $rootScope, authentication, exercisessrv){
 		var vm = this;
 		$scope.title = 'Exercises';
 		$rootScope.curPath = 'exercises';
-
+		//console.log(exercisessrv.getExercise());
+		//console.log(exercisessrv.getExercise());
 		vm.authInfo = authentication.getAuth();
+		
+		vm.exArr = exercisessrv.getExercise();
 
-		vm.exArr = [];
-		//тут надо сохранять в БД
-		vm.addExercise = function(_title){
-			vm.exArr.push({title:_title});
+		vm.exercises = {
+			title: null,
+			descr: null,
+			link: null,
+			amountIn: null,
+			amount: null,
+			time: null
+		}
+
+		vm.addExercise = function(){
+			return exercisessrv.addExercise(vm.exercises);
 		}
 
 

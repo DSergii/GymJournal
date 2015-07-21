@@ -20,6 +20,7 @@ $.material.init();
 		'GymJournal.nutrition',
 		'GymJournal.login',
 		'GymJournal.timer',
+		'GymJournal.exercises.srv',
 		])
 		.config(gymJournalConfig)
 		.constant('FIREBASE_URL', 'https://gymjournal.firebaseio.com/')
@@ -195,6 +196,43 @@ $.material.init();
 ;(function(){
 'use strict'
 
+angular
+	.module('GymJournal.exercises.srv', ['firebase'])
+	.service('exercisessrv', exercisessrv);
+
+	exercisessrv.$inject = ['FIREBASE_URL', '$firebaseArray', '$firebaseObject'];
+
+	function exercisessrv(FIREBASE_URL, $firebaseArray, $firebaseObject){
+
+		var exData = this;
+
+		var ref = new Firebase(FIREBASE_URL);
+
+		var exRef = ref.child('exercises');
+
+		var refObj = $firebaseObject(ref); //$firebaseObject - не позволяет работать с ng-repeat
+
+		var exArr = $firebaseArray(exRef); //$firebaseArray - позволяет работать с ng-repeat
+
+
+		this.addExercise = function(_exersises){
+			exRef.child('exercises').set(_exersises);
+		}
+
+		this.getExercise = function(){
+			//return exRef.child('exercises').get(_exersises);
+			return exArr.$loaded(function(_data){ //т.к. загрузка асинхронная, то $loaded возвращает промис
+				return _data;
+			});
+		}
+
+	}
+
+
+})();
+;(function(){
+'use strict'
+
 	angular
 		.module('GymJournal.gymfirebase.srv', ['firebase'])
 		.service('gymfirebase', gymfirebase);
@@ -233,7 +271,7 @@ $.material.init();
 
 		this.addUser = function(_user){
 			var usersLength = $firebaseObject(ref.child('options').child('userLength'));
-			$log.debug(usersLength);
+			//$log.debug(usersLength);
 			usersLength.$loaded(function(){
 				var uLength = usersLength.$value++;
 				usersLength.$save();
@@ -276,27 +314,28 @@ angular
 
 		t.min = 0;
 		t.sec = 0;
-		t.secc = 0;
+		//t.secc = 0;
 
 		t.flag = false;
 		// ДОРАБОТАТЬ НАПИЛЬНИКОМ
 		t.cur = function(){
 			t.min = Math.floor(t.time / 60);
 			t.sec = t.time % 60;
-			t.secc = t.time - t.sec;
 			if(t.time) t.flag = true;
 		}
 
 		t.start = function(){
 			var	timer = setInterval(function(){
-		        if(t.min > 0){
+		        if(t.min > 0 && t.sec == 0){
 		            t.min--;
 		        }else{
-		            t.secc--;
-		            if(t.secc == 0) clearInterval(timer);
+		            t.sec--;
+		            if(t.sec <= 0) clearInterval(timer);
+		            
 		        }
 		    },1000);
 		}
+		console.log(t.sec);
 
 	}
 
@@ -356,17 +395,27 @@ angular
 
 	//ExercisesCtrl.$inject = ['$scope', '$rootScope'];
 
-	function ExercisesCtrl($scope, $rootScope, authentication){
+	function ExercisesCtrl($scope, $rootScope, authentication, exercisessrv){
 		var vm = this;
 		$scope.title = 'Exercises';
 		$rootScope.curPath = 'exercises';
-
+		//console.log(exercisessrv.getExercise());
+		//console.log(exercisessrv.getExercise());
 		vm.authInfo = authentication.getAuth();
+		
+		vm.exArr = exercisessrv.getExercise();
 
-		vm.exArr = [];
-		//тут надо сохранять в БД
-		vm.addExercise = function(_title){
-			vm.exArr.push({title:_title});
+		vm.exercises = {
+			title: null,
+			descr: null,
+			link: null,
+			amountIn: null,
+			amount: null,
+			time: null
+		}
+
+		vm.addExercise = function(){
+			return exercisessrv.addExercise(vm.exercises);
 		}
 
 
@@ -624,7 +673,7 @@ angular
 			vm.userData  = curUser; 
 		});
 		
-		//изменяем данные пользователя на вход Uid в БД и данные из формы
+		//изменяем данные пользователя, на вход Uid в БД и данные из формы
 		vm.updateUser = function(){
 			return gymfirebase.updateUser(curUserUid, vm.user);
 		}

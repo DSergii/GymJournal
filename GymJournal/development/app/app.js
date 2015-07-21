@@ -20,6 +20,7 @@ $.material.init();
 		'GymJournal.nutrition',
 		'GymJournal.login',
 		'GymJournal.timer',
+		'GymJournal.exercises.srv',
 		])
 		.config(gymJournalConfig)
 		.constant('FIREBASE_URL', 'https://gymjournal.firebaseio.com/')
