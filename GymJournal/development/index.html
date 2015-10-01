@@ -118,8 +118,11 @@
 	<script src="libs/angular/angular.js"></script>
 	<script src="libs/angular/angular-route.js"></script>
 	<script src="libs/angular/firebase.js"></script>
+	<script src="libs/angular/angular-animate.js"></script>
 	<script src="libs/angular/angularfire.js"></script>
 	<script src="libs/angular/angular-cookies.js"></script>
+	<script src="https://www.youtube.com/iframe_api"></script>
+	<script src="libs/angular/angular-youtube-embed.js"></script>
 	<!-- Our JS App Fies -->
 	<script src="app/app.js"></script>
 	
@@ -144,6 +147,7 @@
 							<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
 							<button type="submit" class="btn btn-primary" ng-click="ac.login()">Войти</button>
 							<button type="submit" class="btn btn-primary" ng-click="ac.googleLogin()">Google</button>
+							<button type="submit" class="btn btn-primary" ng-click="ac.facebookLogin()">Facebook</button>
 						</div>
 					</form>
 				</div>
@@ -197,13 +201,16 @@
 							<input type="text" class="form-control" id="m-email" placeholder="Задайте время в секундах" ng-model="tc.time">
 						</div>
 						<div class="form-group text-center clock" ng-show="tc.flag">
-							<span class="min">{{tc.min}}</span> : <span class="sec" ng-bind="tc.sec"></span>
+							<span class="min" ng-bind="tc.min"></span> : <span class="sec" ng-bind="tc.sec"></span>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-success" ng-click="tc.cur()">Задать</button>
 							<button type="button" class="btn btn-info" ng-click="tc.start()">Старт</button>
 							<button type="button" class="btn btn-danger" ng-click="tc.stop()">Стоп</button>
+							<button type="button" class="btn btn-danger" ng-show="tc.flag2" ng-click="tc.updateInterval()">Обновить</button>
 						</div>
+						<audio src="audio/pip0.wav"></audio>
+						<audio src="audio/pip1.wav"></audio>
 					</form>
 				</div>
 			</div>

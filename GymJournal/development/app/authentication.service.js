@@ -75,6 +75,34 @@
 				}
 			}
 
+			function fbAuthHandle(error, authData){
+				if(error){
+					console.log('facebook social-login failed!', error);
+				}else{
+					console.log('facebook social-login successfuly!', authData);
+					var userRef = ref.child('users').child(authData.facebook.id);
+					var user = $firebaseObject(userRef);
+
+					user.$loaded(function(){
+						if(user.email){
+							userRef.child('lastActivity').set(Firebase.ServerValue.TIMESTAMP);
+						}else{
+							userRef.set({
+								'email': authData.facebook.email,
+								'name': authData.facebook.displayName,
+								'avatar': authData.facebook.profileImageURL,
+								'id': authData.facebook.id,
+								'token': authData.token,
+								'uid': authData.uid,
+								'expires': authData.expires,
+								'accessToken': authData.facebook.accessToken,
+								'lastActivity': Firebase.ServerValue.TIMESTAMP
+							});
+						}
+					});
+				}
+			}
+
 			var	authObj = {
 
 				googleLogin: function(_user, authHndl){
@@ -84,6 +112,14 @@
 						scope: "profile,\
 								email"
 					});
+				},
+
+				facebookLogin: function(_user, authHndl){
+					authHndl = typeof authHndl !== 'undefined' ? authHndl : fbAuthHandle;
+					ref.authWithOAuthPopup("facebook", function(error, authData) {
+						remember: "sessionOnly";
+  						scope: "email, user_likes"
+					});	
 				},
 
 				login: function(_user, authHndl){

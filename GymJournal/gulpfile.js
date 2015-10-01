@@ -60,6 +60,7 @@ var bc = './bower_components/';
 		bc+'angular-touch/angular-touch.js',
 		bc+'firebase/firebase.js',
 		bc+'angularfire/dist/angularfire.js',
+		bc+'angular-youtube-mb/src/angular-youtube-embed.js',
 		])
 		.pipe(gulp.dest('./dist/libs/angular/'));
 	});

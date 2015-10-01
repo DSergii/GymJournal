@@ -8,6 +8,8 @@ $.material.init();
 		'ngRoute',
 		'firebase',
 		'ngCookies',
+		'ngAnimate',
+		'youtube-embed',
 		'Authentication',
 		'GymJournal.gymfirebase.srv',
 		'GymJournal.about',

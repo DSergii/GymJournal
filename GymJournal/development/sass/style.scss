@@ -103,3 +103,71 @@ header{
 		color: #f00;
 	}
 }
+.contact-list
+{
+	margin: 0;
+	padding: 0;
+	list-style: none;
+
+	li
+	{
+		font-size: 16px;
+		line-height: 20px;
+		margin:0 0 15px;
+	}
+}
+.nutrition-list
+{
+	margin: 0;
+	padding: 0;
+	list-style: none;
+
+	li
+	{
+		font-size: 16px;
+		line-height: 20px;
+		margin:0 0 15px;
+	    text-align: left;
+
+		a
+		{
+			cursor: pointer;
+			text-decoration: none;
+		}
+	}
+	li.descr.hidden
+	{
+		max-height: 0;
+	}
+	li.descr
+	{
+		max-height: 200px;
+	    -webkit-transition: height 1s ease-out 0.5s;
+	    -moz-transition: height 1s ease-out 0.5s;
+	    -o-transition: height 1s ease-out 0.5s;
+	    transition: height 1s ease-out 0.5s;
+	    overflow: hidden;
+	}
+
+}
+.exers{
+	margin: 0;
+	padding: 0;
+	list-style: none;
+
+	li{
+		margin: 0 0 10px;
+
+		.title{
+			font-size: 20px;
+			line-height: 24px;
+		}
+		.video{
+			iframe {
+				height: 300px !important;
+    			width: 540px !important;
+			}
+		}
+		&.title{text-align: center;}
+	}
+}

@@ -57,6 +57,10 @@ function AuthController($scope, $log, $cookies, authentication){
 	vm.googleLogin = function(){
 		authentication.googleLogin();
 	}
+
+	vm.facebookLogin = function(){
+		authentication.facebookLogin();
+	}
 	/*vm.login = function(){
 		$log.debug('Login');
 		Auth.login(vm.credentials.username, vm.credentials.password);
