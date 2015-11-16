@@ -1,3 +1,22 @@
-<div ng-controller="MainCtrl">
-
+<div ng-controller="MainCtrl as mc">
+	<div class="holder" ng-show="signedIn()">
+		<div class="ex-box" ng-repeat="ex in vm.exer">
+			<a href="" ng-click="vm.bool = true"><span>{{ex.data.title}}</span></a>
+		</div>
+	</div>
+	<div ng-show="vm.bool" class="count">
+		<form name="countForm" ngController="MainCtrl">
+			<label>Введите количество подходов</label>
+			<input type="text" ng-model="mc.count.access">
+		</form>
+	</div>
+	{{mc.count.access}}
+	<div user-count-box="mc.count.access"></div>
+	<div class="item" ng-show="mc.count.access > 0">
+		<div class="box-item" ng-repeat="c in mc.count.access">
+			<form >
+				<input type="text" class="class+c" ng-model="item">
+			</form>
+		</div>
+	</div>
 </div>

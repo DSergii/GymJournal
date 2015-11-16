@@ -35,7 +35,6 @@ angular
 			return exArr.$loaded(function(_data){
 				return _data;
 			});
-
 		}		
 			//	});
 			//return exArr.child(_data); //т.к. загрузка асинхронная, то $loaded возвращает промис

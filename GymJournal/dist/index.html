@@ -38,6 +38,12 @@
 					</ul>
 					<ul class="nav navbar-nav navbar-right" >
 						<li><a href="">{{currentUser.name}} {{currentUser.lastname}}</a></li>
+						<li>
+							<div class="hold-img">
+								<img src="{{sc.userData.facebook.profileImageURL}}" alt="">
+							</div>
+						</li>
+						<li><a href="">{{sc.userData.facebook.displayName}}</a></li>
 						<li><a href="" data-toggle="modal" data-target="#login-dialog" ng-hide="signedIn()" >Log in</a></li>
 						<li><a href="" ng-show="signedIn()" ng-click="sc.logout()">Logout</a></li>
 					</ul>
@@ -147,7 +153,7 @@
 							<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
 							<button type="submit" class="btn btn-primary" ng-click="ac.login()">Войти</button>
 							<button type="submit" class="btn btn-primary" ng-click="ac.googleLogin()">Google</button>
-							<button type="submit" class="btn btn-primary" ng-click="ac.facebookLogin()">Facebook</button>
+							<button type="submit" class="btn btn-primary" ng-click="ac.facebookLogin()" data-dismiss="modal">Facebook</button>
 						</div>
 					</form>
 				</div>

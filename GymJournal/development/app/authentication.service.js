@@ -1,5 +1,5 @@
 ;(function(){
-'use strict'
+	'use strict'
 
 	angular
 		.module('Authentication', [
@@ -88,8 +88,9 @@
 							userRef.child('lastActivity').set(Firebase.ServerValue.TIMESTAMP);
 						}else{
 							userRef.set({
-								'email': authData.facebook.email,
-								'name': authData.facebook.displayName,
+								//'email': authData.facebook.email,
+								'firstName': authData.facebook.cachedUserProfile.first_name,
+								'lastName': authData.facebook.cachedUserProfile.last_name,
 								'avatar': authData.facebook.profileImageURL,
 								'id': authData.facebook.id,
 								'token': authData.token,
@@ -115,10 +116,15 @@
 				},
 
 				facebookLogin: function(_user, authHndl){
-					authHndl = typeof authHndl !== 'undefined' ? authHndl : fbAuthHandle;
+					//authHndl = typeof authHndl !== 'undefined' ? authHndl : fbAuthHandle;
 					ref.authWithOAuthPopup("facebook", function(error, authData) {
 						remember: "sessionOnly";
-  						scope: "email, user_likes"
+  						if (error) {
+							console.log("Authentication Failed!");
+						}else{
+							console.log("Authenticated successfully with payload");
+							fbAuthHandle(error, authData);
+						}
 					});	
 				},
 

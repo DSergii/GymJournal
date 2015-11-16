@@ -13,27 +13,24 @@ angular
 		var vm = this;
 		$scope.title = 'Exercises';
 		$rootScope.curPath = 'exercises';
-		//console.log(exercisessrv.getExercise());
-		//console.log(exercisessrv.getExercise());
+
 		vm.authInfo = authentication.getAuth();
 
-		//console.log(vm.authInfo.uid); //id текущего пользователя
+
 		
 		vm.exArr = exercisessrv.getExercise();
-		//console.log(exercisessrv.getExercise());
+
 		vm.exercises = {
 			title: null,
 			descr: null,
 			link: null
 		}
-		//console.log(vm.exArr);
 		vm.addExercise = function(){
 			return exercisessrv.addExercise(vm.exercises, vm.authInfo.uid);
 		}
 		
 		vm.exer = '';
 		exercisessrv.getExercise().then(function(_data){
-			console.log(_data);
 			vm.exer = _data;
 		});
 		
