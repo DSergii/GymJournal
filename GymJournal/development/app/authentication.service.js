@@ -59,7 +59,7 @@
 							userRef.child('lastActivity').set(Firebase.ServerValue.TIMESTAMP);
 						}else{
 							userRef.set({
-								'email': authData.google.email,
+								//'email': authData.google.email,
 								'name': authData.google.displayName,
 								'avatar': authData.google.cachedUserProfile.picture,
 								'id': authData.google.id,
@@ -109,10 +109,8 @@
 				googleLogin: function(_user, authHndl){
 					
 					authHndl = typeof authHndl !== 'undefined' ? authHndl : socialAuthHandle;
-					ref.authWithOAuthPopup("google", authHndl, {
-						scope: "profile,\
-								email"
-					});
+					console.log(authHndl);
+					ref.authWithOAuthPopup("google", authHndl);
 				},
 
 				facebookLogin: function(_user, authHndl){

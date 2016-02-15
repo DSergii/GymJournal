@@ -13,32 +13,20 @@
 		//.factory('Auth', AuthFactory)
 
 
-function StatusController($scope, $log, authentication, FIREBASE_URL, $firebaseObject, $firebaseArray, gymfirebase){
+function StatusController($scope, $rootScope, $log, authentication, FIREBASE_URL, $firebaseObject, $firebaseArray, gymfirebase){
 
 	var vm = this;
 
-	var curUserUid = authentication.getAuth().uid;
-	
-	var userObj = gymfirebase.getCurUser(curUserUid);
-
-	var curUser = $firebaseObject(userObj);
-
 	var ref = new Firebase(FIREBASE_URL);
-
-	var usersRef = ref.child('users');
-
-	//var aaa = usersRef.child( curUserUid );
-
 	var authData = ref.getAuth();
-
-
-	vm.userData = '';
-
-	curUser.$loaded().then(function(){ //когда пользователь загружен
-		vm.userData  = authData; 
-		console.log(vm.userData.facebook);
-	});
-
+	if(authData !== null){
+		var curUserUid = authentication.getAuth().uid;
+		var userObj = gymfirebase.getCurUser(curUserUid);
+		var curUser = $firebaseObject(userObj);
+		curUser.$loaded().then(function(){ //когда пользователь загружен
+			vm.userData  = authData; 
+		});
+	}
 	vm.getEmail = function(){
 		return authentication.getEmail();
 	}

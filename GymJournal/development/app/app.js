@@ -5,11 +5,12 @@ $.material.init();
 	
 	angular
 		.module('GymJournal', [
-		'ngRoute',
+		'ui.router',
 		'firebase',
 		'ngCookies',
 		'ngAnimate',
 		'youtube-embed',
+		'chart.js',
 		'Authentication',
 		'GymJournal.gymfirebase.srv',
 		'GymJournal.about',
@@ -18,7 +19,6 @@ $.material.init();
 		'GymJournal.exercises',
 		'GymJournal.statistics',
 		'GymJournal.profile',
-		'GymJournal.playlist',
 		'GymJournal.nutrition',
 		'GymJournal.login',
 		'GymJournal.timer',
@@ -28,17 +28,15 @@ $.material.init();
 		.constant('FIREBASE_URL', 'https://gymjournal.firebaseio.com/')
 		.controller('AppCtrl', AppCtrl)
 				
-	gymJournalConfig.$inject = ['$routeProvider', '$locationProvider'];
+	gymJournalConfig.$inject = ['$stateProvider', '$urlRouterProvider'];
 
 
 	function AppCtrl($scope, $rootScope){
 
 	}
 	
-	function gymJournalConfig($routeProvider, $locationProvider){
-		$routeProvider.
-			otherwise({redirectTo: '/'});
-		$locationProvider.html5Mode(false);
+	function gymJournalConfig($stateProvider, $urlRouterProvider){
+		$urlRouterProvider.otherwise('/home');
 	}
 })();
 

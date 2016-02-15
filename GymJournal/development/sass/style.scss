@@ -173,10 +173,10 @@ header{
 }
 .holder{
 	overflow: hidden;
-
+	text-align:center;
 	.ex-box{
-		float: left;
-		margin:0 30px 10px 0;
+		display: inline-block;
+		margin:0 30px 10px;
 
 		a{
 			display: table-cell;
@@ -212,6 +212,24 @@ header{
 		}
 	}
 }
+.count{
+	overflow:hidden;
+
+	.hold-form{
+		width: 300px;
+		margin: 0 auto;
+		text-align: center;
+
+		label{
+			display: block;
+		}
+
+		input[type="text"]{
+			width: 30px;
+			margin:0 10px;
+		}
+	}
+}
 .navbar-nav .hold-img{
 	-webkit-border-radius: 50%;
 	-moz-border-radius: 50%;
@@ -220,4 +238,12 @@ header{
 	height: 60px;
 	overflow: hidden;
 	margin: 0;
+}
+#content{
+	h1{margin-bottom: 30px;}
+}
+[ng\:cloak],
+[ng-cloak],
+.ng-cloak {
+  display: none !important;
 }

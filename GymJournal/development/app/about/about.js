@@ -2,8 +2,8 @@
 'use strict'
 
 angular
-	.module('GymJournal.about', ['ngRoute'])
-	.config(['$routeProvider', configAbout])
+	.module('GymJournal.about', ['ui.router'])
+	.config(['$stateProvider', configAbout])
 	.controller('AboutCtrl', AboutCtrl);
 	
 	AboutCtrl.$inject = ['$scope', '$rootScope', 'gymfirebase'];
@@ -27,16 +27,15 @@ angular
 		vm.addUser = function(){
 		 	gymfirebase.addUser(vm.user);
 		}
-			
-
 	}
 	
-	function configAbout($routeProvider){
-		$routeProvider.
-			when('/about', {
+	function configAbout($stateProvider){
+		$stateProvider
+			.state('about', {
+				url: '/about',
 				templateUrl: 'app/about/about.html',
 				controller: 'AboutCtrl',
-				controllerAs: 'vm'
+				controllerAs: 'ac'
 			});
 	}
 })();

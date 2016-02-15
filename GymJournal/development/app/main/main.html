@@ -1,22 +1,16 @@
-<div ng-controller="MainCtrl as mc">
-	<div class="holder" ng-show="signedIn()">
-		<div class="ex-box" ng-repeat="ex in vm.exer">
-			<a href="" ng-click="vm.bool = true"><span>{{ex.data.title}}</span></a>
-		</div>
+<div class="holder" ng-show="signedIn()">
+	<div class="ex-box" ng-repeat="ex in mc.exer">
+		<a href="" ng-click="mc.bool = true"><span>{{ex.data.title}}</span></a>
 	</div>
-	<div ng-show="vm.bool" class="count">
-		<form name="countForm" ngController="MainCtrl">
-			<label>Введите количество подходов</label>
-			<input type="text" ng-model="mc.count.access">
+</div>
+<div ng-show="mc.bool" class="count">
+	<a class="btn btn-raised btn-primary" ng-click="mc.addApproach()">Добавить</a>
+	<div class="hold-form">
+		<form name="countForm" ng-submit="mc.saveEquipmentApproach()">
+			<label>Подход {{mc.approach}}</label>
+			<label>Введите количество повторений</label>
+			<input type="text" ng-model="mc.countApr" name="countApr" ng-repeat="c in mc.mass">
+			<input type="submit" id="submit" value="Save" />
 		</form>
-	</div>
-	{{mc.count.access}}
-	<div user-count-box="mc.count.access"></div>
-	<div class="item" ng-show="mc.count.access > 0">
-		<div class="box-item" ng-repeat="c in mc.count.access">
-			<form >
-				<input type="text" class="class+c" ng-model="item">
-			</form>
-		</div>
 	</div>
 </div>

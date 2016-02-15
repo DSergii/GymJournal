@@ -1,13 +1,13 @@
 ;(function (){
 'use strict'
 angular
-	.module('GymJournal.profile', ['ngRoute'])
+	.module('GymJournal.profile', ['ui.router'])
 	.config(ProfileConfig)
 	.controller('ProfileCtrl', ProfileCtrl);
 
-	ProfileCtrl.$inject = ['$scope', '$rootScope', 'authentication', 'gymfirebase', '$log', '$firebaseObject'];
+	ProfileCtrl.$inject = ['$scope', '$rootScope', 'authentication', 'gymfirebase', '$log', '$firebaseObject', 'FIREBASE_URL'];
 
-	function ProfileCtrl($scope, $rootScope, authentication, gymfirebase, $log, $firebaseObject){
+	function ProfileCtrl($scope, $rootScope, authentication, gymfirebase, $log, $firebaseObject, FIREBASE_URL){
 		
 		var vm = this;
 
@@ -15,9 +15,10 @@ angular
 
 		var curUserUid = authentication.getAuth().uid;
 
-		// gymfirebase.getUsers().then(function(_data){
-		// 	vm.users = _data;
-		// });
+		 gymfirebase.getUsers().then(function(_data){
+		 	console.log(_data);
+		 	vm.users = _data;
+		 });
 
 		vm.user = {
 			name: null,
@@ -33,15 +34,17 @@ angular
 			return authentication.getUsername();
 		}
 
-		var userObj = gymfirebase.getCurUser(curUserUid);
-
-		var curUser = $firebaseObject(userObj);
-
-		vm.userData = '';
-
-		curUser.$loaded().then(function(){ //когда пользователь загружен
-			vm.userData  = curUser; 
-		});
+		var ref = new Firebase(FIREBASE_URL);
+		var authData = ref.getAuth();
+		console.log(authData);
+		if(authData !== null){
+			var curUserUid = authentication.getAuth().uid;
+			var userObj = gymfirebase.getCurUser(curUserUid);
+			var curUser = $firebaseObject(userObj);
+			curUser.$loaded().then(function(){ //когда пользователь загружен
+				vm.userData  = authData; 
+			});
+		}
 		
 		//изменяем данные пользователя, на вход Uid в БД и данные из формы
 		vm.updateUser = function(){
@@ -51,12 +54,13 @@ angular
 
 	}
 
-	function ProfileConfig($routeProvider){
-		$routeProvider
-			.when('/profile', {
+	function ProfileConfig($stateProvider){
+		$stateProvider
+			.state('profile', {
+				url: '/profile',
 				templateUrl: 'app/profile/profile.html',
 				controller: 'ProfileCtrl',
-				controllerAs: 'vm'
+				controllerAs: 'pc'
 			});
 	}
 })();

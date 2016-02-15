@@ -61,6 +61,9 @@ var bc = './bower_components/';
 		bc+'firebase/firebase.js',
 		bc+'angularfire/dist/angularfire.js',
 		bc+'angular-youtube-mb/src/angular-youtube-embed.js',
+		bc+'angular-chart/dist/angular-chart.min.js',
+		bc+'Chart/Chart.min.js',
+		bc+'angular-ui-router/release/angular-ui-router.min.js',
 		])
 		.pipe(gulp.dest('./dist/libs/angular/'));
 	});

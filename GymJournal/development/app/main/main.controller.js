@@ -2,10 +2,9 @@
 'use strict'
 
 	angular
-		.module('GymJournal.main', ['ngRoute', 'ngAnimate'])
+		.module('GymJournal.main', ['ui.router', 'ngAnimate'])
 		.config(configMain)
-		.controller('MainCtrl', MainCtrl)
-		.directive('userCountBox', userCountBox);
+		.controller('MainCtrl', MainCtrl);
 
 		//MainCtrl.$inject = ['$scope', '$rootScope'];
 		
@@ -13,7 +12,11 @@
 
 			var vm = this;
 
-			vm.title = 'Main';
+			vm.approach = 1;
+			vm.mass = [1];
+			vm.apprMass = [];
+			vm.countApr;
+
 			$rootScope.curPath = 'home';
 
 			vm.exer = '';
@@ -21,33 +24,26 @@
 				vm.exer = _data;
 			});
 
-			vm.count = {
-				access: 0
+			vm.addApproach = function(){
+				vm.approach++;
+				vm.mass.push(vm.approach);
 			};
-			
+
+			vm.saveEquipmentApproach = function(){
+				vm.apprMass.push(vm.countApr);
+				console.log(vm.apprMass);
+				vm.countApr = '';
+			};
 
 		}
-		function userCountBox(){
-			restrict: 'AE';
-			return {
-				link: function(scope, element, attrs) {
-	               console.log(element);
-	               console.log(attrs);
-	               	scope.$watch(attrs.userCountBox,function(value){
-                    	for (var i = 0; i < value.length; i++) {
-                    		console.log(i);
-                    	};
-                	});
-	            }
-			}
-		}
 
-		function configMain($routeProvider){
-			$routeProvider
-				.when('/home', {
+		function configMain($stateProvider){
+			$stateProvider
+				.state('home', {
+					url: '/home',
 					templateUrl: 'app/main/main.html',
 					controller: 'MainCtrl',
-					controllerAs: 'vm'
+					controllerAs: 'mc'
 				});
 		}
 

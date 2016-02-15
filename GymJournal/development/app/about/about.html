@@ -1,11 +1,9 @@
-<div ng-controller="AboutCtrl">
-	<h1>This is page {{vm.title}}</h1>
-</div>
+<h1>This is page {{ac.title}}</h1>
 <pre>
-	{{vm.users | json}}
+	{{ac.users | json}}
 </pre>
-<form name="newUser" ng-submit="vm.addUser()">
-	<input class="form-control" type="text" ng-model="vm.user.name">
-	<input class="form-control" type="text" ng-model="vm.user.age">
+<form name="newUser" ng-submit="ac.addUser()">
+	<input class="form-control" type="text" ng-model="ac.user.name">
+	<input class="form-control" type="text" ng-model="ac.user.age">
 	<button class="btn btn-primary">Add user</button>
 </form>

@@ -1,28 +1,25 @@
-<div ng-controller='ExercisesCtrl as ec'>
-	<div class="row">
-		<div class="col-xs-6">
-			<h3>Мои упражнения</h3>
-			<ul class="exers" ng-repeat="ex in vm.exer">
-				<li><strong class="title">{{ex.data.title}}</strong></li>
-				<li>{{ex.data.descr}}</li>
-				<li>
-					<div class="video">
-						<youtube-video video-url='ex.data.link'></youtube-video>
-					</div>
-				</li>
-			</ul>
-		</div>
-		<div class="col-xs-6">
-			<h3 class="">Добавить упражнение</h3>
-			<form role="form">
-				<div class="form-group">
-					<input type="text" class="form-control" placeholder="Название упражнения" id="f-name" ng-model="ec.exercises.title">
-					<textarea class="form-control" rows="3" placeholder="Описание упражнения" id="textArea" ng-model="ec.exercises.descr"></textarea>
-					<input type="text" class="form-control" placeholder="Ссылка на видео" id="link" ng-model="ec.exercises.link">
+<div class="row">
+	<div class="col-xs-6">
+		<h3>Мои упражнения</h3>
+		<ul class="exers" ng-repeat="data in ex.exer">
+			<li><strong class="title">{{data.data.title}}</strong></li>
+			<li>{{data.data.descr}}</li>
+			<li>
+				<div class="video">
+					<youtube-video video-url='data.data.link'></youtube-video>
 				</div>
-				<button type="button" class="btn btn-info" ng-click="ec.addExercise()">Добавить</button>
-			</form>
-		</div>
+			</li>
+		</ul>
 	</div>
-	
+	<div class="col-xs-6">
+		<h3 class="">Добавить упражнение</h3>
+		<form role="form">
+			<div class="form-group">
+				<input type="text" class="form-control" placeholder="Название упражнения" id="f-name" ng-model="ec.exercises.title">
+				<textarea class="form-control" rows="3" placeholder="Описание упражнения" id="textArea" ng-model="ec.exercises.descr"></textarea>
+				<input type="text" class="form-control" placeholder="Ссылка на видео" id="link" ng-model="ec.exercises.link">
+			</div>
+			<button type="button" class="btn btn-info" ng-click="ec.addExercise()">Добавить</button>
+		</form>
+	</div>
 </div>

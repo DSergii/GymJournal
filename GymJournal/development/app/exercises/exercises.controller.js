@@ -2,24 +2,20 @@
 	'use strict'
 
 angular
-	.module('GymJournal.exercises', ['ngRoute', 'GymJournal.login', 'youtube-embed'])
+	.module('GymJournal.exercises', ['ui.router', 'GymJournal.login', 'youtube-embed'])
 	.config(ConfigExercicses)
 	.controller('ExercisesCtrl', ExercisesCtrl);
 
 
 	//ExercisesCtrl.$inject = ['$scope', '$rootScope'];
 
-	function ExercisesCtrl($scope, $rootScope, authentication, exercisessrv, $firebaseObject){
+	function ExercisesCtrl($scope, $rootScope, authentication, exercisessrv, $firebaseObject, GetMyExercises){
 		var vm = this;
 		$scope.title = 'Exercises';
 		$rootScope.curPath = 'exercises';
 
 		vm.authInfo = authentication.getAuth();
-
-
-		
 		vm.exArr = exercisessrv.getExercise();
-
 		vm.exercises = {
 			title: null,
 			descr: null,
@@ -28,25 +24,26 @@ angular
 		vm.addExercise = function(){
 			return exercisessrv.addExercise(vm.exercises, vm.authInfo.uid);
 		}
-		
-		vm.exer = '';
-		exercisessrv.getExercise().then(function(_data){
-			vm.exer = _data;
-		});
+		console.log(GetMyExercises);
+		vm.exer = GetMyExercises;
+		// exercisessrv.getExercise().then(function(_data){
+		// 	vm.exer = _data;
+		// });
 		
 	}
 
-	function ConfigExercicses($routeProvider){
-		$routeProvider
-			.when('/exercises', {
+	function ConfigExercicses($stateProvider){
+		$stateProvider
+			.state('exercises', {
+				url: '/exercises',
 				templateUrl: 'app/exercises/exercises.html',
 				controller: 'ExercisesCtrl',
-				controllerAs: 'vm',
-				/*resolve: {
-					user: function(Auth, $q){
-						return Auth.getUsername	|| $q.reject({unAuthorized: true})
+				controllerAs: 'ex',
+				resolve : {
+					GetMyExercises : function(exercisessrv){
+						return exercisessrv.getExercise();
 					}
-				}*/
+				}
 			});
 	}
 
