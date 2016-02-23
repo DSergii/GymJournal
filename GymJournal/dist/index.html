@@ -4,9 +4,15 @@
 		<meta charset="UTF-8">
 		<title>Gym Journal</title>
 		<meta name="viewport" content="width=device-width">
+		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+  		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/icon?family=Material+Icons">
+  		<link rel="stylesheet" href="libs/bootstrap/css/bootstrap.min.css">
+		<link rel="stylesheet" href="libs/bootstrap-material-design/css/bootstrap-material-design.min.css">
+		<link rel="stylesheet" href="libs/bootstrap-material-design/css/ripples.min.css">
 		<link rel="stylesheet" href="css/style.min.css">
 		<link rel="stylesheet" href="css/angular-chart.min.css">
 		<base href="/">
+
 	</head>
 	<body ng-cloak>
 		<div class="container main-container">
@@ -121,8 +127,8 @@
 	<!-- Others JS Files -->
 	<script src="libs/jquery/jquery.js"></script>
 	<script src="libs/bootstrap/js/bootstrap.js"></script>
-	<script src="libs/bootstrap-material-design/js/material.js"></script>
 	<script src="libs/bootstrap-material-design/js/ripples.js"></script>
+	<script src="libs/bootstrap-material-design/js/material.js"></script>
 	<!-- AngularJs vDependencies -->
 	<script src="libs/angular/angular.js"></script>
 	<script src="libs/angular/angular-route.js"></script>
@@ -216,10 +222,10 @@
 							<span class="min" ng-bind="tc.min"></span> : <span class="sec" ng-bind="tc.sec"></span>
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-success" ng-click="tc.cur()">Задать</button>
-							<button type="button" class="btn btn-info" ng-click="tc.start()">Старт</button>
-							<button type="button" class="btn btn-danger" ng-click="tc.stop()">Стоп</button>
-							<button type="button" class="btn btn-danger" ng-show="tc.flag2" ng-click="tc.updateInterval()">Обновить</button>
+							<button type="button" class="btn btn-raised btn-success" ng-click="tc.cur()">Задать</button>
+							<button type="button" class="btn btn-raised btn-info" ng-click="tc.start()">Старт</button>
+							<button type="button" class="btn btn-raised btn-danger" ng-click="tc.stop()">Стоп</button>
+							<button type="button" class="btn btn-raised btn-danger" ng-show="tc.flag2" ng-click="tc.updateInterval()">Обновить</button>
 						</div>
 						<audio src="audio/pip0.wav"></audio>
 						<audio src="audio/pip1.wav"></audio>

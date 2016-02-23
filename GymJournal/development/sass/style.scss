@@ -21,7 +21,8 @@ header{
 	width:100%;
 }
 .navbar .navbar-nav > li > a{
-	font-weight: 600;
+	font-weight: 400;
+	color: #fff;
 }
 .navbar .navbar-nav > .active > a,
 .navbar .navbar-nav > .active > a:hover,
@@ -218,16 +219,6 @@ header{
 	.hold-form{
 		width: 300px;
 		margin: 0 auto;
-		text-align: center;
-
-		label{
-			display: block;
-		}
-
-		input[type="text"]{
-			width: 30px;
-			margin:0 10px;
-		}
 	}
 }
 .navbar-nav .hold-img{
@@ -246,4 +237,7 @@ header{
 [ng-cloak],
 .ng-cloak {
   display: none !important;
+}
+.input-group-addon{
+	padding: 6px 12px 6px 0;
 }

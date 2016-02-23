@@ -11,12 +11,8 @@
 		function MainCtrl($scope, $rootScope, FIREBASE_URL, exercisessrv, authentication){
 
 			var vm = this;
-
-			vm.approach = 1;
-			vm.mass = [1];
-			vm.apprMass = [];
-			vm.countApr;
-
+			vm.box = [];
+			vm.flag = false;
 			$rootScope.curPath = 'home';
 
 			vm.exer = '';
@@ -24,16 +20,12 @@
 				vm.exer = _data;
 			});
 
-			vm.addApproach = function(){
-				vm.approach++;
-				vm.mass.push(vm.approach);
-			};
-
-			vm.saveEquipmentApproach = function(){
-				vm.apprMass.push(vm.countApr);
-				console.log(vm.apprMass);
-				vm.countApr = '';
-			};
+			vm.addCount = function(num){
+				for (var i = num; i > 0; i--) {
+					vm.box.unshift(i);
+				};
+				vm.flag = true;
+			}
 
 		}
 

@@ -405,6 +405,31 @@ angular
 	}
 })();
 ;(function(){
+'use strict'
+
+angular
+	.module('GymJournal.contact', ['ngRoute'])
+	.config( configContact )
+	.controller('ContactCtrl', ContactCtrl);
+	
+	ContactCtrl.$inject = ['$scope', '$rootScope'];
+	
+	function ContactCtrl($scope, $rootScope){
+		$scope.title = 'Contact';
+		$rootScope.curPath = 'contact';
+	}
+	
+	function configContact($stateProvider){
+		$stateProvider
+			.state('contact', {
+				url: '/contact',
+				templateUrl: 'app/contact/contact.html',
+				controller: 'ContactCtrl',
+				controllerAs: 'vm'
+			});
+	}
+})();
+;(function(){
 	'use strict'
 
 angular
@@ -458,49 +483,6 @@ angular
 ;(function(){
 'use strict'
 
-angular
-	.module('GymJournal.about', ['ui.router'])
-	.config(['$stateProvider', configAbout])
-	.controller('AboutCtrl', AboutCtrl);
-	
-	AboutCtrl.$inject = ['$scope', '$rootScope', 'gymfirebase'];
-	
-	function AboutCtrl($scope, $rootScope, gymfirebase){
-
-		var vm = this;
-
-		vm.title = 'Page About';
-		$rootScope.curPath = 'about';
-
-		gymfirebase.getUsers().then(function(_data){
-			vm.users = _data;
-		});
-
-		vm.user = {
-			name: null,
-			age: 0
-		}
-
-		vm.addUser = function(){
-		 	gymfirebase.addUser(vm.user);
-		}
-			
-
-	}
-	
-	function configAbout($stateProvider){
-		$stateProvider.
-			state('about', {
-				url: '/about',
-				templateUrl: 'app/about/about.html',
-				controller: 'AboutCtrl',
-				controllerAs: 'ac'
-			});
-	}
-})();
-;(function(){
-'use strict'
-
 	angular
 		.module('GymJournal.main', ['ui.router', 'ngAnimate'])
 		.config(configMain)
@@ -511,12 +493,8 @@ angular
 		function MainCtrl($scope, $rootScope, FIREBASE_URL, exercisessrv, authentication){
 
 			var vm = this;
-
-			vm.approach = 1;
-			vm.mass = [1];
-			vm.apprMass = [];
-			vm.countApr;
-
+			vm.box = [];
+			vm.flag = false;
 			$rootScope.curPath = 'home';
 
 			vm.exer = '';
@@ -524,16 +502,12 @@ angular
 				vm.exer = _data;
 			});
 
-			vm.addApproach = function(){
-				vm.approach++;
-				vm.mass.push(vm.approach);
-			};
-
-			vm.saveEquipmentApproach = function(){
-				vm.apprMass.push(vm.countApr);
-				console.log(vm.apprMass);
-				vm.countApr = '';
-			};
+			vm.addCount = function(num){
+				for (var i = num; i > 0; i--) {
+					vm.box.unshift(i);
+				};
+				vm.flag = true;
+			}
 
 		}
 
@@ -814,24 +788,37 @@ angular
 'use strict'
 
 angular
-	.module('GymJournal.contact', ['ngRoute'])
-	.config( configContact )
-	.controller('ContactCtrl', ContactCtrl);
+	.module('GymJournal.about', ['ui.router'])
+	.config(['$stateProvider', configAbout])
+	.controller('AboutCtrl', AboutCtrl);
 	
-	ContactCtrl.$inject = ['$scope', '$rootScope'];
+	AboutCtrl.$inject = ['$scope', '$rootScope', 'gymfirebase'];
 	
-	function ContactCtrl($scope, $rootScope){
-		$scope.title = 'Contact';
-		$rootScope.curPath = 'contact';
+	function AboutCtrl($scope, $rootScope, gymfirebase){
+
+		var vm = this;
+
+		gymfirebase.getUsers().then(function(_data){
+			vm.users = _data;
+		});
+
+		vm.user = {
+			name: null,
+			age: 0
+		}
+
+		vm.addUser = function(){
+		 	gymfirebase.addUser(vm.user);
+		}
 	}
 	
-	function configContact($stateProvider){
+	function configAbout($stateProvider){
 		$stateProvider
-			.state('contact', {
-				url: '/contact',
-				templateUrl: 'app/contact/contact.html',
-				controller: 'ContactCtrl',
-				controllerAs: 'vm'
+			.state('about', {
+				url: '/about',
+				templateUrl: 'app/about/about.html',
+				controller: 'AboutCtrl',
+				controllerAs: 'ac'
 			});
 	}
 })();

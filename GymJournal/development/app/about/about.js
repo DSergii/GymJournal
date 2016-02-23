@@ -12,9 +12,6 @@ angular
 
 		var vm = this;
 
-		vm.title = 'Page About';
-		$rootScope.curPath = 'about';
-
 		gymfirebase.getUsers().then(function(_data){
 			vm.users = _data;
 		});

@@ -4,13 +4,32 @@
 	</div>
 </div>
 <div ng-show="mc.bool" class="count">
-	<a class="btn btn-raised btn-primary" ng-click="mc.addApproach()">Добавить</a>
 	<div class="hold-form">
-		<form name="countForm" ng-submit="mc.saveEquipmentApproach()">
-			<label>Подход {{mc.approach}}</label>
-			<label>Введите количество повторений</label>
-			<input type="text" ng-model="mc.countApr" name="countApr" ng-repeat="c in mc.mass">
-			<input type="submit" id="submit" value="Save" />
+		<form class="bs-component" name="countForm">
+			<div class="form-group">
+			  <label class="control-label" for="addon1">Задайте количество подходов</label>
+			  <div class="input-group">
+			  	 <span class="input-group-addon"><i class="material-icons">fitness_center</i></span>
+			    <input id="addon1" class="form-control" type="text" ng-model="count">
+			    <span class="input-group-btn">
+			        <button class="btn btn-primary" type="button" ng-click="mc.addCount(count)">Задать</button>
+			    </span>
+			  </div>
+			</div>
+		</form>
+		<form ng-if="mc.flag">
+			<div class="hold-form form-group">
+				<div class="form-group label-floating" ng-repeat="count in mc.box">
+				  <label class="control-label" for="addon2">Подход {{count}}</label>
+				  <div class="input-group">
+				    <input id="addon2" class="form-control" type="text" name="access{{count}}">
+				    <span class="input-group-btn">
+				        <i class="material-icons">fitness_center</i>
+				    </span>
+				  </div>
+				</div>
+				<button class="btn btn-primary" type="submit">Сохранить</button>
+			</div>
 		</form>
 	</div>
 </div>
