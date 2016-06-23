@@ -716,6 +716,40 @@ angular
 	}
 })();
 ;(function(){
+	'use strict';
+
+	angular
+		.module('GymJournal.about', ['ui.router'])
+		.controller('AboutCtrl', AboutCtrl);
+		
+		AboutCtrl.$inject = ['$scope', '$rootScope'];
+		
+		function AboutCtrl($scope, $rootScope){
+
+			var vm = this;
+			$rootScope.curPath = 'about';
+		}
+	
+})();
+;(function() {
+	'use strict';
+
+	angular
+		.module('GymJournal.about' )
+		.config(configAbout);
+
+	function configAbout($stateProvider) {
+		$stateProvider
+			.state('about', {
+				url: '/about',
+				templateUrl: 'app/about/about.html',
+				controller: 'AboutCtrl',
+				controllerAs: 'ac'
+			});
+	}
+
+})();
+;(function(){
 'use strict'
 
 angular
@@ -813,7 +847,7 @@ angular
 
 		//MainCtrl.$inject = ['$scope', '$rootScope'];
 		
-		function MainCtrl($scope, $rootScope, FIREBASE_URL, exercisessrv, authentication){
+		function MainCtrl($scope, $rootScope, FIREBASE_URL, exercisessrv, authentication, $state){
 
 			var vm = this;
 
@@ -876,7 +910,7 @@ angular
 			    	distance: data.distance,
 			    	time: data.timer
 			  	});
-
+			  	$state.go('statistics');
 			}
 
 		}
@@ -1306,40 +1340,6 @@ angular
 				templateUrl: 'app/statistics/statistics.html',
 				controller: 'StatisticCtrl',
 				controllerAs: 'sc'
-			});
-	}
-
-})();
-;(function(){
-	'use strict';
-
-	angular
-		.module('GymJournal.about', ['ui.router'])
-		.controller('AboutCtrl', AboutCtrl);
-		
-		AboutCtrl.$inject = ['$scope', '$rootScope'];
-		
-		function AboutCtrl($scope, $rootScope){
-
-			var vm = this;
-			$rootScope.curPath = 'about';
-		}
-	
-})();
-;(function() {
-	'use strict';
-
-	angular
-		.module('GymJournal.about' )
-		.config(configAbout);
-
-	function configAbout($stateProvider) {
-		$stateProvider
-			.state('about', {
-				url: '/about',
-				templateUrl: 'app/about/about.html',
-				controller: 'AboutCtrl',
-				controllerAs: 'ac'
 			});
 	}
 

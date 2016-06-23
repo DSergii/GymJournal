@@ -7,7 +7,7 @@
 
 		//MainCtrl.$inject = ['$scope', '$rootScope'];
 		
-		function MainCtrl($scope, $rootScope, FIREBASE_URL, exercisessrv, authentication){
+		function MainCtrl($scope, $rootScope, FIREBASE_URL, exercisessrv, authentication, $state){
 
 			var vm = this;
 
@@ -70,7 +70,7 @@
 			    	distance: data.distance,
 			    	time: data.timer
 			  	});
-
+			  	$state.go('statistics');
 			}
 
 		}
