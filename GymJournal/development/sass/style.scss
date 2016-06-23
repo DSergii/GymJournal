@@ -67,6 +67,7 @@ header{
 	height:250px;
 	border:1px solid #b4b4b4;
 	margin:0 0 10px;
+
 	img{
 		width:100%;
 		display:block;
@@ -177,13 +178,17 @@ header{
 	text-align:center;
 	.ex-box{
 		display: inline-block;
-		margin:0 30px 10px;
+		margin:0 30px 15px;
 
-		a{
-			display: table-cell;
+		a{	
+			box-sizing: content-box;
+			display: block;
 			width: 120px;
-			height: 120px;
+			height: 16px;
+			padding: 9px 0 11px;
 			border: 1px solid #13CBCB;
+			font-size: 16px;
+			line-height: 18px;
 			-webkit-border-radius: 15px;
 			-moz-border-radius: 15px;
 			border-radius: 15px;
@@ -231,7 +236,16 @@ header{
 	margin: 0;
 }
 #content{
-	h1{margin-bottom: 30px;}
+	h1, h2{
+		font-size: 28px;
+		line-height: 30px;
+		margin-bottom: 30px;
+	}
+
+	.hold-img{
+		height: auto;
+		min-height: 250px;
+	}
 }
 [ng\:cloak],
 [ng-cloak],
@@ -241,3 +255,52 @@ header{
 .input-group-addon{
 	padding: 6px 12px 6px 0;
 }
+.hold-result{
+	overflow: hidden;
+	width: 100%;
+
+	.hold-table{
+		margin: 0 auto 30px;
+		padding: 0;
+		font-size: 16px;
+		line-height: 18px;
+		width: 500px;
+		border: 1px solid #13CBCB;
+		-webkit-border-radius: 5px;
+		-moz-border-radius: 5px;
+		border-radius: 5px;
+
+	}
+
+	table{
+		max-width: 100%;
+		width: 100%;
+		background-color: transparent;
+		border-collapse: collapse;
+		border-spacing: 0;
+
+		th,
+		td{
+			padding: 5px 0;
+			text-align: center;
+		}
+		td{
+			padding: 5px;
+		}
+	}
+}
+
+/* .ng-hide.animate-show{
+	opacity: 0;
+	margin-right: 150px;
+	-webkit-transition: opacity 0.3s ease-in-out, margin-right 0.3s ease-in-out;
+	-moz-transition: opacity 0.3s ease-in-out, margin-right 0.3s ease-in-out;
+	-ms-transition: opacity 0.3s ease-in-out, margin-right 0.3s ease-in-out;
+	-o-transition: opacity 0.3s ease-in-out, margin-right 0.3s ease-in-out;
+	transition: opacity 0.3s ease-in-out, margin-right 0.3s ease-in-out;
+}
+
+.animate-show{
+	opacity: 1;
+	margin-right: 0;
+} */

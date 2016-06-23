@@ -23,21 +23,42 @@ $.material.init();
 		'GymJournal.login',
 		'GymJournal.timer',
 		'GymJournal.exercises.srv',
+		'GymJournal.getCurrentUser',
+		'base64',
+		'GymJournal.filter',
+		'LocalStorageModule'
 		])
 		.config(gymJournalConfig)
+		.run(runApplication)
 		.constant('FIREBASE_URL', 'https://gymjournal.firebaseio.com/')
-		.controller('AppCtrl', AppCtrl)
 				
-	gymJournalConfig.$inject = ['$stateProvider', '$urlRouterProvider'];
+	gymJournalConfig.$inject = ['$stateProvider', '$urlRouterProvider', 'localStorageServiceProvider'];
 
 
-	function AppCtrl($scope, $rootScope){
+	function runApplication($rootScope, $log, localStorageService){
 
+		var config = {
+		  	apiKey: "AIzaSyCidue7FrttTuNhnVtknPjGcRfWb8inEas",
+			authDomain: "gymjournal.firebaseapp.com",
+			databaseURL: "https://gymjournal.firebaseio.com",
+			storageBucket: "project-2650490989829732466.appspot.com",
+		};
+
+		firebase.initializeApp(config);
+		
 	}
 	
-	function gymJournalConfig($stateProvider, $urlRouterProvider){
+	function gymJournalConfig($stateProvider, $urlRouterProvider, localStorageServiceProvider){
 		$urlRouterProvider.otherwise('/home');
+
+		/* configurate localStorage */
+
+		localStorageServiceProvider
+    	.setPrefix('firebase:authUser')
+	    .setStorageType('localStorage')
+	    .setNotify(true, true);
 	}
+
 })();
 
 
@@ -50,15 +71,142 @@ $.material.init();
 			])
 		.factory('authentication', AuthenticationFactory)
 
+		function AuthenticationFactory( $rootScope, $log, $q ){
 
+			var deferred = $q.defer();
 
+			var API = {
+				login: login,
+				signIn: signIn,
+				signOut: signOut,
+				googleLogin : googleLogin,
+				facebookLogin: facebookLogin,
+				gitHubLogin: gitHubLogin
+			}
 
-		function AuthenticationFactory($firebaseAuth, $firebaseObject, $rootScope, FIREBASE_URL, $log ){
+			return API;
+
+			function login(loginData) {
+
+				firebase.auth().signInWithEmailAndPassword(loginData.email, loginData.password).catch(function(error) {
+
+				  	var errorCode = error.code;
+				  	var errorMessage = error.message;
+				  	$log.error('login failure: ', errorMessage);
+
+				});
+			}
+
+			function signIn(signInData) {
+
+				firebase.auth().createUserWithEmailAndPassword(signInData.email, signInData.password).catch(function(error) {
+
+					var errorCode = error.code;
+					var errorMessage = error.message;
+					$log.error('signIn failure: ', errorMessage);
+
+				});
+
+			}
+
+			function signOut() {
+
+				firebase.auth().signOut().then(function() {
+					$log.info('signOut successful');
+				}, function(error) {
+				  	$log.error('signOut failure: ', error);
+				});
+
+			}
+
+			function googleLogin() {
+
+				var googleProvider = new firebase.auth.GoogleAuthProvider();
+				googleProvider.addScope('https://www.googleapis.com/auth/plus.login');
+
+				firebase.auth().signInWithPopup(googleProvider).then(function(result) {
+
+					var token = result.credential.accessToken;
+					var user = result.user;
+					$log.info('token ', token);
+					$log.info('user ', user);
+					deferred.resolve( user );
+
+				}).catch(function(error) {
+
+				  var errorCode = error.code;
+				  var errorMessage = error.message;
+				  var email = error.email;
+				  var credential = error.credential;
+				  $log.error('errorMessage', errorMessage);
+				  deferred.reject( error );
+
+				});
+
+				return deferred.promise;
+			}
+
+			function facebookLogin() {
+
+				var facebookProvider = new firebase.auth.FacebookAuthProvider();
+				facebookProvider.addScope('public_profile');
+
+				firebase.auth().signInWithPopup(facebookProvider).then(function(result) {
+
+				  	var token = result.credential.accessToken;
+				  	var user = result.user;
+				  	$log.info('token ', token);
+					$log.info('user ', user);
+					deferred.resolve( user );
+
+				}).catch(function(error) {
+
+				  	var errorCode = error.code;
+				  	var errorMessage = error.message;
+				  	var email = error.email;
+				  	var credential = error.credential;
+				  	$log.error('errorMessage', errorMessage);
+				  	deferred.reject( error );
+
+				});
+
+				return deferred.promise;
+			}
+
+			function gitHubLogin() {
+
+				var gitHubProvider = new firebase.auth.GithubAuthProvider();
+				gitHubProvider.addScope('user');
+
+				firebase.auth().signInWithPopup(gitHubProvider).then(function(result) {
+
+				  	var token = result.credential.accessToken;
+				  	var user = result.user;
+				  	$log.info('token ', token);
+					$log.info('user ', user);
+					deferred.resolve( user );
+
+				}).catch(function(error) {
+
+				  	var errorCode = error.code;
+				  	var errorMessage = error.message;
+				  	var email = error.email;
+				  	var credential = error.credential;
+				  	$log.error('errorMessage', errorMessage);
+				  	deferred.reject( error );
+
+				});
+
+				return deferred.promise;
+
+			}
 
 			// получение ссылки на нашу БД 
-			var ref = new Firebase(FIREBASE_URL)
+			//var ref = new Firebase(FIREBASE_URL)
 
-			var auth = $firebaseAuth(ref);
+			//var auth = $firebaseAuth(ref);
+
+			/*var auth = firebase.auth();
 
 			function authCallback(authData){
 				if(authData){
@@ -70,15 +218,15 @@ $.material.init();
 				}else{
 					$rootScope.currentUser = null;
 				}	
-			}
+			}*/
 			/*
 				когда пользователь залогинен firebase генерирует событие onAuth 
 				которое обрабатывается ф-цией authCallback, в которую приходит
 				авторизационные данные
 			*/
-			ref.onAuth(authCallback); 
+			//ref.onAuth(authCallback); 
 
-			function authHandle(error, authData){
+			/*function authHandle(error, authData){
 				if(error){
 					console.log('Auth failed!', error);
 				}else{
@@ -95,8 +243,10 @@ $.material.init();
 					console.log('social-login failed!', error);
 				}else{
 					console.log('social-login successfuly!', authData);
+					$rootScope.$broadcast('user-login', authData);
 					var userRef = ref.child('users').child(authData.google.id);
 					var user = $firebaseObject(userRef);
+
 					user.$loaded(function(){ 
 						if(user.email){
 							userRef.child('lastActivity').set(Firebase.ServerValue.TIMESTAMP);
@@ -123,6 +273,7 @@ $.material.init();
 					console.log('facebook social-login failed!', error);
 				}else{
 					console.log('facebook social-login successfuly!', authData);
+					$rootScope.$broadcast('user-login', authData);
 					var userRef = ref.child('users').child(authData.facebook.id);
 					var user = $firebaseObject(userRef);
 
@@ -152,7 +303,7 @@ $.material.init();
 				googleLogin: function(_user, authHndl){
 					
 					authHndl = typeof authHndl !== 'undefined' ? authHndl : socialAuthHandle;
-					console.log(authHndl);
+					//console.log(authHndl);
 					ref.authWithOAuthPopup("google", authHndl);
 				},
 
@@ -228,7 +379,7 @@ $.material.init();
 				return authObj.signedIn();
 			}
 
-			return authObj;
+			return authObj;*/
 
 		}
 		
@@ -240,41 +391,201 @@ angular
 	.module('GymJournal.exercises.srv', ['firebase'])
 	.service('exercisessrv', exercisessrv);
 
-	exercisessrv.$inject = ['FIREBASE_URL', '$firebaseArray', '$firebaseObject', 'authentication'];
+	exercisessrv.$inject = ['$q', '$rootScope'];
 
-	function exercisessrv(FIREBASE_URL, $firebaseArray, $firebaseObject, authentication){
+	function exercisessrv($q, $rootScope){
 
-		var exData = this;
+		var rootRef = firebase.database().ref();
 
-		var ref = new Firebase(FIREBASE_URL);
-
-		var exRef = ref.child('exercises');
-
-		var refObj = $firebaseObject(ref); //$firebaseObject - не позволяет работать с ng-repeat
-
-		var exArr = $firebaseArray(exRef); //$firebaseArray - позволяет работать с ng-repeat
-		//console.log(refObj.child('exersises'));
-		this.addExercise = function(_exersises, _id){
-			var exLength = $firebaseObject(ref.child('OptionsEx').child('exLength'));
-			exLength.$loaded(function(){
-				var eLength = exLength.$value++;
-				exLength.$save();
-				exRef.child(eLength).set({"data" : _exersises, "user" : _id});
-			});
-			//exRef.child(_exersises).set(_id);
-			//var exLength = $firebaseObject(ref.child())...2015.06.13_2 1:51:31
-			//закончил на 1:25
-		}
+		var deferred = $q.defer();
+		
+		var regexp = /\d+/g;
+		
+		
 
 		this.getExercise = function(){
-			return exArr.$loaded(function(_data){
-				return _data;
+			rootRef.on('value', function(snapshot) {
+				
+				var exercises = snapshot.val().exercises;
+				//console.log(exercises);
+				//console.log('USER DATA ', $rootScope.userData);
+				
+				deferred.resolve( checkUser( exercises, $rootScope.userData ) );
+
 			});
-		}		
-			//	});
-			//return exArr.child(_data); //т.к. загрузка асинхронная, то $loaded возвращает промис
+
+			return deferred.promise;
+		}
+
+		function checkUser(exercises, user) {
+
+			var exercisesData = {};
+
+			var count = 0;
+
+			for( var key in exercises) {
+
+				if(exercises.hasOwnProperty(key)) {
+
+					if($rootScope.userData !== undefined && user !== null ){
+
+						if(user.providerId === 'password' && exercises[key].user === $rootScope.userData.uid){
+							exercisesData[count] = exercises[key].data;
+							count++;
+						}
+
+						if(user.providerId !== 'password' && exercises[key].user.match(regexp)[0] === $rootScope.userData.uid) {
+							exercisesData[count] = exercises[key].data;
+							count++;
+						}
+					}
+				}
+
+			}
+
+			return exercisesData;
+		}
+
 }
 	
+
+
+})();
+;(function() {
+	'use strict';
+
+	angular
+		.module('GymJournal.getCurrentUser', ['firebase'])
+		.factory('getCurrentUser', getCurrentUser);
+
+	function getCurrentUser($rootScope, $q, $log) {
+
+		var auth = firebase.auth();
+		
+
+		var API = {
+			getUserInfo: getUserInfo,
+			getUserDataById: getUserDataById,
+			updateUserInfo: updateUserInfo,
+			saveUserImage: saveUserImage
+		}
+
+		return API;
+
+		function getUserInfo() {
+
+			var deferred = $q.defer();
+
+			auth.onAuthStateChanged(function(user) {
+
+				if (user) {
+
+					if(user.providerData.length) {
+
+						if(user.providerData[0].providerId === 'password') {
+							//console.log(getUserByPassword(user));
+							deferred.resolve( getUserByPassword(user) );
+						}
+
+						deferred.resolve( user.providerData[0] );
+						
+					}
+
+				} else {
+					//$log.error('User not define ');
+					deferred.reject();
+				}
+
+			});
+
+			return deferred.promise;
+		}
+
+		function getUserDataById() {
+
+			var deferred = $q.defer();
+			var userId = null;
+			var regexp = /\d+/g;
+
+			auth.onAuthStateChanged(function(user) {
+
+				if(user.providerData[0].providerId === 'password') {
+					userId = user.uid;
+				}else if(user.providerData[0].providerId === 'github.com'){
+					userId = user.providerData[0].uid;
+				}else{
+					userId = user.uid.match(regexp)[0];
+				}
+
+				firebase.database().ref('/users/' + userId).once('value').then(function(snapshot) {
+					deferred.resolve( snapshot.val() );
+				});	
+
+			});
+
+			return deferred.promise;
+		}
+
+		function updateUserInfo(userId, data) {
+
+		  	firebase.database().ref('users/' + userId).set({
+		    	name: data.name,
+		    	lastname: data.lastname,
+		    	email: data.email,
+				height: data.height,
+				weight: data.weight,
+				age: data.age,
+				image: data.image
+		  	});
+
+		}
+
+		function saveUserImage(image) {
+
+			var deferred = $q.defer();
+			//console.log( 'image - ', image );
+			var storage = firebase.storage();
+			var storageRef = storage.ref();
+			var imagesRef = storageRef.child($rootScope.userData.uid);
+			var spaceRef = imagesRef.child(image.name);
+			var fileName = image.name.substr(0, image.name.lastIndexOf('.'));
+
+			var uploadTask = storageRef.child( $rootScope.userData.uid + '/' + fileName).put(image);
+
+			uploadTask.on('state_changed', function(snapshot){
+
+			  console.log('snapshot ', snapshot);
+
+			}, function(error) {
+
+			  //console.log('error ', error);
+			  deferred.reject(error);
+
+			}, function() {
+
+			  	var downloadURL = uploadTask.snapshot.downloadURL;
+
+			  	deferred.resolve( downloadURL );
+			  	//console.log('downloadURL ', downloadURL);
+
+			});
+			
+			return deferred.promise;
+		}
+
+		function getUserByPassword(data) {
+
+			var user = {}
+
+			user.data = data.providerData[0];
+			user.uid = data.uid;
+
+			return user;
+
+		}
+
+	}
+
 
 
 })();
@@ -294,18 +605,18 @@ angular
 		var dbData = this;
 
 		/* подключение к БД */
-		var ref = new Firebase(FIREBASE_URL);
+		//var ref = new Firebase(FIREBASE_URL);
 
 		/* получение объекта из БД */
-		var refObj = $firebaseObject(ref);
+		//var refObj = $firebaseObject(ref);
 
 		/* получение массива из объекта БД */
-		var refArr = $firebaseArray(ref);
+		//var refArr = $firebaseArray(ref);
 
 		/*вернет только пользователей, все равно, что добавить users в конец url ->  https://gymjournal.firebaseio.com/users */
-		var usersRef = ref.child('users');
+		//var usersRef = ref.child('users');
 
-		var usersArr = $firebaseArray(usersRef);
+		//var usersArr = $firebaseArray(usersRef);
 
 		this.getUsers = function(){
 			return usersArr.$loaded(function(_data){
@@ -336,14 +647,14 @@ angular
 
 		/* callback функция, возвращающая через промис объект из БД 
 		(можно обойтись без нее, но она нужна для синхронной загрузки) */
-		refObj.$loaded(function() {
-			dbData.dbObj = refObj;
-		});
+		// refObj.$loaded(function() {
+		// 	dbData.dbObj = refObj;
+		// });
 
 		/* тот же callback только в виде массива */
-		refArr.$loaded(function(){
-			dbData.dbArr = refArr;
-		});
+		// refArr.$loaded(function(){
+		// 	dbData.dbArr = refArr;
+		// });
 
 	}
 
@@ -409,7 +720,6 @@ angular
 
 angular
 	.module('GymJournal.contact', ['ngRoute'])
-	.config( configContact )
 	.controller('ContactCtrl', ContactCtrl);
 	
 	ContactCtrl.$inject = ['$scope', '$rootScope'];
@@ -418,52 +728,67 @@ angular
 		$scope.title = 'Contact';
 		$rootScope.curPath = 'contact';
 	}
-	
-	function configContact($stateProvider){
+
+})();
+;(function() {
+	'use strict';
+
+	angular
+		.module('GymJournal.contact' )
+		.config(configContact);
+
+	function configContact($stateProvider) {
 		$stateProvider
 			.state('contact', {
 				url: '/contact',
 				templateUrl: 'app/contact/contact.html',
 				controller: 'ContactCtrl',
-				controllerAs: 'vm'
+				controllerAs: 'cc'
 			});
 	}
+
 })();
 ;(function(){
 	'use strict'
 
 angular
 	.module('GymJournal.exercises', ['ui.router', 'GymJournal.login', 'youtube-embed'])
-	.config(ConfigExercicses)
 	.controller('ExercisesCtrl', ExercisesCtrl);
 
 
 	//ExercisesCtrl.$inject = ['$scope', '$rootScope'];
 
-	function ExercisesCtrl($scope, $rootScope, authentication, exercisessrv, $firebaseObject, GetMyExercises){
+	function ExercisesCtrl($scope, $rootScope, authentication, exercisessrv, GetMyExercises){
 		var vm = this;
 		$scope.title = 'Exercises';
 		$rootScope.curPath = 'exercises';
 
-		vm.authInfo = authentication.getAuth();
-		vm.exArr = exercisessrv.getExercise();
 		vm.exercises = {
 			title: null,
 			descr: null,
 			link: null
 		}
+
 		vm.addExercise = function(){
 			return exercisessrv.addExercise(vm.exercises, vm.authInfo.uid);
 		}
-		console.log(GetMyExercises);
-		vm.exer = GetMyExercises;
-		// exercisessrv.getExercise().then(function(_data){
-		// 	vm.exer = _data;
-		// });
+
+		exercisessrv.getExercise().then(function(_data){
+			console.log(_data);
+			vm.exer = _data;
+		});
 		
 	}
 
-	function ConfigExercicses($stateProvider){
+})();
+;(function() {
+	'use strict';
+
+	angular
+		.module('GymJournal.exercises' )
+		.config(exercicsesConfig);
+
+	function exercicsesConfig($stateProvider) {
 		$stateProvider
 			.state('exercises', {
 				url: '/exercises',
@@ -478,14 +803,12 @@ angular
 			});
 	}
 
-
 })();
 ;(function(){
 'use strict'
 
 	angular
 		.module('GymJournal.main', ['ui.router', 'ngAnimate'])
-		.config(configMain)
 		.controller('MainCtrl', MainCtrl);
 
 		//MainCtrl.$inject = ['$scope', '$rootScope'];
@@ -493,36 +816,91 @@ angular
 		function MainCtrl($scope, $rootScope, FIREBASE_URL, exercisessrv, authentication){
 
 			var vm = this;
-			vm.box = [];
-			vm.flag = false;
+
+			vm.choiseExersise = choiseExersise;
+			vm.saveResult = saveResult;
+
+			vm.exersises = {
+				ex1: 'Отжимания',
+				ex2: 'Приседания',
+				ex3: 'Подтягивания',
+				ex4: 'Жим лежа',
+				ex5: 'Бег'
+			}
+
+			vm.exItem = {
+				exID: null,
+				fit: null,
+				iteration: null,
+				distance: null,
+				time: null
+			}
+
 			$rootScope.curPath = 'home';
 
-			vm.exer = '';
-			exercisessrv.getExercise().then(function(_data){
-				vm.exer = _data;
-			});
+			vm.isShow = false;
+			vm.isRun = false;
 
-			vm.addCount = function(num){
-				for (var i = num; i > 0; i--) {
-					vm.box.unshift(i);
-				};
-				vm.flag = true;
+			function choiseExersise(e) {
+
+				vm.exItem = {
+					exID: null,
+					fit: null,
+					iteration: null,
+					distance: null,
+					timer: null
+				}
+
+				vm.exItem.exID = e.target.id;
+
+				if( e.target.id === 'ex5' ) {
+					vm.isRun = true;
+					vm.isShow = false;
+				}else{
+					vm.isRun = false;
+					vm.isShow = true;
+				}
+				
+			}
+
+			function saveResult() {
+
+				var userId = $rootScope.userData.uid;
+				var timestamp = new Date().getTime();
+				var data = vm.exItem;
+
+			  	firebase.database().ref('userEx/' + userId + '/' + timestamp).set({
+			    	exId: data.exID,
+			    	fit: data.fit,
+			    	iteration: data.iteration,
+			    	distance: data.distance,
+			    	time: data.timer
+			  	});
+
 			}
 
 		}
 
-		function configMain($stateProvider){
-			$stateProvider
-				.state('home', {
-					url: '/home',
-					templateUrl: 'app/main/main.html',
-					controller: 'MainCtrl',
-					controllerAs: 'mc'
-				});
-		}
-
 })();
 
+;(function() {
+	'use strict';
+
+	angular
+		.module('GymJournal.main')
+		.config(mainConfig);
+
+	function mainConfig($stateProvider){
+		$stateProvider
+			.state('home', {
+				url: '/home',
+				templateUrl: 'app/main/main.html',
+				controller: 'MainCtrl',
+				controllerAs: 'mc'
+			});
+	}
+
+})();
 ;(function(){
 'use strict'
 
@@ -530,28 +908,25 @@ angular
 		.module('GymJournal.login', [
 				'ngRoute',
 				'firebase'
-
 			])
 		.constant('SERVER_URL')
 		.controller('AuthCtrl', AuthController)
 		.controller('StatusCtrl', StatusController)
-		//.factory('Auth', AuthFactory)
 
-
-function StatusController($scope, $rootScope, $log, authentication, FIREBASE_URL, $firebaseObject, $firebaseArray, gymfirebase){
+function StatusController($scope, $rootScope, $log, authentication, gymfirebase, $state, getCurrentUser){
 
 	var vm = this;
 
-	var ref = new Firebase(FIREBASE_URL);
-	var authData = ref.getAuth();
-	if(authData !== null){
-		var curUserUid = authentication.getAuth().uid;
-		var userObj = gymfirebase.getCurUser(curUserUid);
-		var curUser = $firebaseObject(userObj);
-		curUser.$loaded().then(function(){ //когда пользователь загружен
-			vm.userData  = authData; 
-		});
-	}
+	vm.userData = {}
+
+	getCurrentUser.getUserInfo()
+	.then(function(data) {
+		vm.userData = data;
+		$rootScope.userData = data;
+		$rootScope.signIn = true;
+
+	});
+	//console.log($rootScope);
 	vm.getEmail = function(){
 		return authentication.getEmail();
 	}
@@ -561,14 +936,24 @@ function StatusController($scope, $rootScope, $log, authentication, FIREBASE_URL
 	}
 
 	vm.logout = function(){
-		authentication.logout();
+		authentication.signOut();
+		//vm.userData = null;
+		$rootScope.signIn = false;
+		$rootScope.userData = null;
+		$state.go('home');
 	}
 
 }
 
-function AuthController($scope, $log, $cookies, authentication){
+function AuthController($scope, $rootScope, $log, $cookies, authentication, getCurrentUser){
 
 	var vm = this;
+
+	vm.login = login;
+	vm.register = register;
+	vm.googleLogin = googleLogin;
+	vm.facebookLogin = facebookLogin;
+	vm.gitHubLogin = gitHubLogin;
 
 	vm.credentials = {
 		email: null,
@@ -576,80 +961,83 @@ function AuthController($scope, $log, $cookies, authentication){
 	}
 
 	vm.newUser = {
-		firstname: null,
-		lastname: null,
 		email: null,
 		password: null
 	}
 	
-	vm.login = function(){
+	function login() {
+
 		authentication.login(vm.credentials);
+
+		getCurrentUser.getUserInfo()
+		.then(function(data) {
+			vm.userData = data;
+			console.log(100500);
+			console.log(data);
+			$rootScope.userData = data;
+			$rootScope.signIn = true;
+
+		});
 	}
 
-	vm.register = function(){
+	function register() {
 		authentication.register(vm.newUser);
 	}
 
-	vm.googleLogin = function(){
-		authentication.googleLogin();
+	function googleLogin() {
+		authentication.googleLogin()
+		.then( function(user) {
+
+			$rootScope.userData = getUserInfo(user);
+			$rootScope.signIn = true;
+			
+		});
 	}
 
-	vm.facebookLogin = function(){
-		authentication.facebookLogin();
-	}
-	/*vm.login = function(){
-		$log.debug('Login');
-		Auth.login(vm.credentials.username, vm.credentials.password);
-	}
+	function facebookLogin() {
+		authentication.facebookLogin()
+		.then( function(user) {
 
-	vm.username = function(){
-		return Auth.getUsername();
-	}*/
-}
+			$rootScope.userData = getUserInfo(user);
+			$rootScope.signIn = true;
 
-/*function AuthFactory($http, SERVER_URL){
-	var auth = {};
-
-	auth.login = function(_username, _password){
-		var auth_url = SERVER_URL;
-		return $http.get(auth_url)
-			.then(function(responce){
-				if(responce.data.status == 'success'){
-					$cookies.put('auth_token', responce.data.auth_token);
-					$cookies.put('user_id', responce.data.id);
-					$cookies.put('user_name', _username);
-					auth.user = {
-						username: _username,
-						id: responce.data.id
-					}
-				}
-				$log.debug('Loged in', responce);
-				
-			})
+		});
 	}
 
-	auth.getUsername = function(){
-		if(auth.user && auth.username){
-			return auth.user.username;
-				return null;
+	function gitHubLogin() {
+		authentication.gitHubLogin()
+		.then( function(user) {
+
+			$rootScope.userData = getUserInfo(user);
+			$rootScope.signIn = true;
+
+		});
+	}
+
+	function getUserInfo(user) {
+
+		var userObj = {}
+
+		if (user) {
+
+			if(user.providerData.length) {
+
+				if(user.providerData[0].providerId === 'password') {
+
+					userObj.data = user.providerData[0];
+					userObj.uid = user.uid;
+
+				} else {
+					userObj.data = user.providerData[0];
+				}	
+
+			}
+
 		}
+
+		return userObj.data;
 	}
-
-	auth.logout = function(){
-		return $http.get()
-			.then(function(responce){
-				if(responce.data.status == 'success'){
-					$cookies.remove('auth_token');
-					$cookies.remove('user_id');
-					$cookies.remove('user_name');
-					auth.user = null;
-				}
-
-			});
-	}
-
-	return auth;
-}*/
+}
 
 
 })();
@@ -658,7 +1046,6 @@ function AuthController($scope, $log, $cookies, authentication){
 'use strict'
 angular
 	.module('GymJournal.nutrition', ['ui.router', 'ngAnimate'])
-	.config(NutritionConfig)
 	.controller('NutritionCtrl', NutritionCtrl);
 
 	NutritionCtrl.$inject = ['$scope', '$rootScope', '$http'];
@@ -668,12 +1055,22 @@ angular
 		$rootScope.curPath = 'nutrition';
 
 		$http.get('app/nutrition.json').success(function(data) {
+			//console.log(data)
 			$scope.article = data;
+			
 		});
 		
 	}
 
-	function NutritionConfig($stateProvider){
+})();
+;(function() {
+	'use strict';
+
+	angular
+		.module('GymJournal.nutrition')
+		.config(nutritionConfig);
+
+	function nutritionConfig($stateProvider) {
 		$stateProvider
 			.state('nutrition', {
 				url: '/nutrition',
@@ -682,28 +1079,42 @@ angular
 				controllerAs: 'nc'
 			});
 	}
+
+})();
+;(function() {
+	'use strict';
+
+	angular
+		.module('GymJournal')
+		.directive('fileUpload', fileUpload);
+
+	function fileUpload(){
+
+		return {
+			restrict: 'A',
+			scope: true,
+			link: function(scope, element, attrs){
+
+				element.bind('change', function(e) {
+					scope.$emit('changed-file', e.target.files[0]);
+				});
+			}
+		}
+	}
+
+
 })();
 ;(function (){
 'use strict'
 angular
 	.module('GymJournal.profile', ['ui.router'])
-	.config(ProfileConfig)
 	.controller('ProfileCtrl', ProfileCtrl);
 
-	ProfileCtrl.$inject = ['$scope', '$rootScope', 'authentication', 'gymfirebase', '$log', '$firebaseObject', 'FIREBASE_URL'];
+	ProfileCtrl.$inject = ['$scope', '$rootScope', 'authentication', 'gymfirebase', '$log', 'getCurrentUser'];
 
-	function ProfileCtrl($scope, $rootScope, authentication, gymfirebase, $log, $firebaseObject, FIREBASE_URL){
+	function ProfileCtrl($scope, $rootScope, authentication, gymfirebase, $log, getCurrentUser){
 		
 		var vm = this;
-
-		$rootScope.curPath = 'profile';
-
-		var curUserUid = authentication.getAuth().uid;
-
-		 gymfirebase.getUsers().then(function(_data){
-		 	console.log(_data);
-		 	vm.users = _data;
-		 });
 
 		vm.user = {
 			name: null,
@@ -714,32 +1125,80 @@ angular
 			image: null,
 			age: null
 		}
-		
-		vm.getUsername = function(){
-			return authentication.getUsername();
+
+		vm.imagePath = '';
+		vm.imageData = null;
+		vm.isImage = false;
+
+		vm.updateUser = updateUser;
+		vm.updateImage = updateImage;
+
+		getUserInfo();
+
+		$scope.$on('changed-file', function(e, data) {
+			
+			vm.imageData = data;
+
+			var reader = new window.FileReader();
+				reader.readAsDataURL(data); 
+				reader.onloadend = function() {
+          			vm.user.image = reader.result;
+			  }
+
+			vm.isImage = true;
+
+			$scope.$apply();
+		});
+
+
+
+		function getUserInfo() {
+
+			getCurrentUser.getUserDataById()
+			.then(function(data) {
+
+				if(data.accessToken){
+					vm.user.name = data.firstName;
+					vm.user.lastname = data.lastName;
+					vm.user.image = data.avatar;
+				}else{
+					vm.user.name = data.name;
+					vm.user.lastname = data.lastname;
+					vm.user.email = data.email;
+					vm.user.height = data.height;
+					vm.user.weight = data.weight;
+					vm.user.age = data.age;
+					vm.user.image = data.image;
+				}
+				
+			});
+
 		}
 
-		var ref = new Firebase(FIREBASE_URL);
-		var authData = ref.getAuth();
-		console.log(authData);
-		if(authData !== null){
-			var curUserUid = authentication.getAuth().uid;
-			var userObj = gymfirebase.getCurUser(curUserUid);
-			var curUser = $firebaseObject(userObj);
-			curUser.$loaded().then(function(){ //когда пользователь загружен
-				vm.userData  = authData; 
+		function updateImage() {
+			getCurrentUser.saveUserImage(vm.imageData)
+			.then(function(url) {
+				vm.isImage = true;
+				vm.imagePath = url;
 			});
 		}
-		
-		//изменяем данные пользователя, на вход Uid в БД и данные из формы
-		vm.updateUser = function(){
-			return gymfirebase.updateUser(curUserUid, vm.user);
-		}
-		
 
+		//изменяем данные пользователя, на вход Uid в БД и данные из формы
+		function updateUser(){
+			console.log($rootScope.userData.uid, vm.user);
+			getCurrentUser.updateUserInfo($rootScope.userData.uid, vm.user);
+		}
 	}
 
-	function ProfileConfig($stateProvider){
+})();
+;(function() {
+	'use strict';
+
+	angular
+		.module('GymJournal.profile')
+		.config(profileConfig);
+
+	function profileConfig($stateProvider){
 		$stateProvider
 			.state('profile', {
 				url: '/profile',
@@ -748,71 +1207,133 @@ angular
 				controllerAs: 'pc'
 			});
 	}
+
+})();
+;(function() {
+	'use strict';
+
+	angular
+		.module('GymJournal.filter', [])
+		.filter('exersisesTitle', function() {
+			return function(ID) {
+
+				var res = null;
+				var object = {
+					ex1: 'Отжимания',
+					ex2: 'Приседания',
+					ex3: 'Подтягивания',
+					ex4: 'Жим лежа',
+					ex5: 'Бег'
+				}
+
+				if(ID in object) {
+					res = object[ID];
+				}
+
+				return res;
+			}
+		});
+
 })();
 ;(function (){
 'use strict'
 angular
-	.module('GymJournal.statistics', ['ui.router', 'chart.js'])
-	.config(StatisticsConfig)
+	.module('GymJournal.statistics', ['ui.router', 'chart.js', 'GymJournal.filter'])
 	.controller('StatisticCtrl', StatisticCtrl);
 
 	StatisticCtrl.$inject = ['$scope', '$rootScope'];
 
 	function StatisticCtrl($scope, $rootScope){
+
 		var vm = this;
-		$scope.title = 'Statistics';
+		var auth = firebase.auth();
+
+		$scope.title = 'Мои результаты';
+
 		$rootScope.curPath = 'statistics';
 
-		vm.labels = ["Eating", "Drinking", "Sleeping", "Designing", "Coding", "Cycling", "Running"];
+		vm.labels = ["January", "Fabruary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "Desember"];
 
-		vm.data = [
-		    [65, 59, 80, 81, 56, 55, 40],
-		    [28, 48, 40, 19, 86, 27, 90]
-		];
-		vm.onClick = function (points, evt) {
-		    console.log(points, evt);
-		};
+		vm.data =  [
+			[65, 59, 80, 81, 56, 55, 40],
+    		[28, 48, 40, 19, 86, 27, 90]
+    	];
+
+		vm.exObj = {}
+
+		getExersises();
+
+		function getExersises() {
+
+			var userId = null;
+
+			auth.onAuthStateChanged(function(user) {
+
+				if(user.providerData[0].providerId === 'password') {
+
+					userId = user.uid;
+
+				} else {
+
+					userId = user.providerData[0].uid;
+
+				}
+
+				firebase.database().ref('userEx/' + userId ).once('value').then(function(snapshot) {
+					vm.exObj = snapshot.val();
+					$scope.$apply();
+				});
+
+			});
+		}
+
 	}
+	
+})();
+;(function() {
+	'use strict';
 
-	function StatisticsConfig($stateProvider){
+	angular
+		.module('GymJournal.statistics')
+		.config(statisticsConfig)
+
+
+	function statisticsConfig($stateProvider){
 		$stateProvider
-			.state('statistics', {
+			.state('statistics',
+			 {
 				url: '/statistics',
 				templateUrl: 'app/statistics/statistics.html',
 				controller: 'StatisticCtrl',
 				controllerAs: 'sc'
 			});
 	}
+
 })();
 ;(function(){
-'use strict'
+	'use strict';
 
-angular
-	.module('GymJournal.about', ['ui.router'])
-	.config(['$stateProvider', configAbout])
-	.controller('AboutCtrl', AboutCtrl);
-	
-	AboutCtrl.$inject = ['$scope', '$rootScope', 'gymfirebase'];
-	
-	function AboutCtrl($scope, $rootScope, gymfirebase){
+	angular
+		.module('GymJournal.about', ['ui.router'])
+		.controller('AboutCtrl', AboutCtrl);
+		
+		AboutCtrl.$inject = ['$scope', '$rootScope'];
+		
+		function AboutCtrl($scope, $rootScope){
 
-		var vm = this;
-
-		gymfirebase.getUsers().then(function(_data){
-			vm.users = _data;
-		});
-
-		vm.user = {
-			name: null,
-			age: 0
+			var vm = this;
+			$rootScope.curPath = 'about';
 		}
-
-		vm.addUser = function(){
-		 	gymfirebase.addUser(vm.user);
-		}
-	}
 	
-	function configAbout($stateProvider){
+})();
+;(function() {
+	'use strict';
+
+	angular
+		.module('GymJournal.about' )
+		.config(configAbout);
+
+	function configAbout($stateProvider) {
 		$stateProvider
 			.state('about', {
 				url: '/about',
@@ -821,4 +1342,5 @@ angular
 				controllerAs: 'ac'
 			});
 	}
+
 })();

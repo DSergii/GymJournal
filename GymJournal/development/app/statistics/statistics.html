@@ -1,4 +1,28 @@
-<h1>This is page {{title}}</h1>
-<canvas id="radar" class="chart chart-radar"
-  chart-data="sc.data" chart-labels="sc.labels">
-</canvas> 
+<div class="row">
+	<div class="col-md-12">
+		<h1 class="text-center">{{title}}</h1>
+
+		<div class="hold-result">
+			<div class="hold-table">
+				<table>
+					<tr>
+						<th>Дата</th>
+						<th>Упражнение</th>
+						<th>Подходы</th>
+						<th>Повторения</th>
+					</tr>
+					<tr ng-repeat="(key, value) in sc.exObj">
+						<td ng-bind="key | date:'MMMM/dd/yyyy'"></td>
+						<td ng-bind="value.exId | exersisesTitle"></td>
+						<td ng-bind="value.fit"></td>
+						<td ng-bind="value.iteration"></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+		<canvas id="line" class="chart chart-line" chart-data="sc.data" chart-labels="sc.labels"></canvas> 
+	</div>
+</div>
+
+

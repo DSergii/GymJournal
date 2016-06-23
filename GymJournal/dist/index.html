@@ -1,5 +1,5 @@
 <!doctype html>
-<html ng-app="GymJournal">
+<html ng-app="GymJournal" ng-cloak>
 	<head lang="ru-RU">
 		<meta charset="UTF-8">
 		<title>Gym Journal</title>
@@ -12,11 +12,10 @@
 		<link rel="stylesheet" href="css/style.min.css">
 		<link rel="stylesheet" href="css/angular-chart.min.css">
 		<base href="/">
-
 	</head>
-	<body ng-cloak>
+	<body>
 		<div class="container main-container">
-			<a href="" data-toggle="modal" data-target="#timer"  class="timer">Задать таймер</a>
+			<a href="" data-toggle="modal" data-target="#timer" class="timer" ng-if="signIn">Задать таймер</a>
 			<header id="header">
 			<!--<strong class="logo pull-left">
 					<a href="#" class="mdi-hardware-keyboard-alt">&nbsp;</a>
@@ -27,7 +26,7 @@
 				<div class="navbar-header">
 					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-warning-collapse">
 						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>	
 						<span class="icon-bar"></span>
 					</button>
 					<strong class="logo"><a class="navbar-brand" href="#/">GymDiary</a></strong>
@@ -37,22 +36,22 @@
 						<li  ui-sref-active="active"><a ui-sref="home">Home</a></li>
 						<li  ui-sref-active="active"><a ui-sref="about">About</a></li>
 						<li  ui-sref-active="active"><a ui-sref="contact">Contact</a></li>
-						<li  ui-sref-active="active" ng-show="signedIn()"><a ui-sref="exercises">Exercises</a></li>
-						<li  ui-sref-active="active" ng-show="signedIn()"><a ui-sref="statistics">Statistics</a></li>
-						<li  ui-sref-active="active" ng-show="signedIn()"><a ui-sref="profile">Profile</a></li>
-						<li  ui-sref-active="active" ng-show="signedIn()"><a ui-sref="nutrition">Nutrition</a></li>
+						<li  ui-sref-active="active" ng-show="signIn"><a ui-sref="exercises">Exercises</a></li>
+						<li  ui-sref-active="active" ng-show="signIn"><a ui-sref="statistics">Statistics</a></li>
+						<li  ui-sref-active="active" ng-show="signIn"><a ui-sref="profile">Profile</a></li>
+						<li  ui-sref-active="active" ng-show="signIn"><a ui-sref="nutrition">Nutrition</a></li>
 					</ul>
 					<ul class="nav navbar-nav navbar-right" >
-						<li><a href="">{{currentUser.name}} {{currentUser.lastname}}</a></li>
+						<li><a href=""></a></li>
 						<li>
 							<div class="hold-img">
-								<img src="{{sc.userData.facebook.profileImageURL}}" alt="">
-								<img src="{{sc.userData.google.profileImageURL}}" alt="">
+								<img ng-hide="!signIn" ng-src="{{userData.photoURL}}" alt="">
+								<!-- <img ng-if="sc.userData.provider === 'google' " ng-src="{{sc.userData.google.profileImageURL}}" alt=""> -->
 							</div>
 						</li>
-						<li><a href="">{{sc.userData.facebook.displayName}}{{sc.userData.google.displayName}}</a></li>
-						<li><a href="" data-toggle="modal" data-target="#login-dialog" ng-hide="signedIn()" >Log in</a></li>
-						<li><a href="" ng-show="signedIn()" ng-click="sc.logout()">Logout</a></li>
+						<li><a href="">{{userData.displayName}}</a></li>
+						<li><a href="" data-toggle="modal" data-target="#login-dialog" ng-hide="signIn">Log in</a></li>
+						<li><a href="" ng-hide="!signIn" ng-click="sc.logout()">Logout</a></li>
 					</ul>
 				</div>
 			</div>
@@ -60,75 +59,74 @@
 			<div id="main">
 				<div id="content">
 					<div ui-view>
-						<div class="row">
-							<div class="col-xs-12 text-center" ng-show="curPath == 'home' && signedIn()">
-								<h1>Выберите упражнение</h1>
-							</div>
-							<div class="col-xs-12">
-								
-							</div>
-							<div class="col-xs-12" ng-hide="signedIn()">
-								<div ng-show="curPath == 'home'" id="carousel-example-generic" class="carousel slide" data-ride="carousel">
-									<ol class="carousel-indicators">
-										<li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
-										<li data-target="#carousel-example-generic" data-slide-to="1"></li>
-										<li data-target="#carousel-example-generic" data-slide-to="2"></li>
-										<li data-target="#carousel-example-generic" data-slide-to="3"></li>
-									</ol>
-									<div class="carousel-inner">
-										<div class="item active">
-											<img src="../img/run_man_1920x1080.jpg" alt="run men">
-											<div class="carousel-caption">
-												<h1>To keep a journal</h1>
-											</div>
-										</div>
-										<div class="item ">
-											<img src="../img/img02.jpg" alt="images">
-											<div class="carousel-caption">
-												<h1>Let`s go training</h1>
-											</div>
-										</div>
-										<div class="item">
-											<img src="../img/img03.jpg" alt="images">
-											<div class="carousel-caption">
-												<h1>I will help you</h1>
-											</div>
-										</div>
-										<div class="item ">
-											<img src="../img/img04.jpg" alt="images">
-											<div class="carousel-caption">
-												<h1>Become stronger</h1>
-											</div>
-										</div>
-									</div>
-									<a class="left carousel-control" href="#carousel-example-generic" data-slide="prev">
-									<span class="glyphicon glyphicon-chevron-left"></span>
-									</a>
-									<a class="right carousel-control" href="#carousel-example-generic" data-slide="next">
-									<span class="glyphicon glyphicon-chevron-right"></span>
-									</a>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="row" ng-show="curPath == 'home'" >
-						<div class="col-xs-6 col-xs-offset-3 reg-btn" ng-hide="signedIn()">
-							<a href="#" class="btn btn-info" data-toggle="modal" data-target="#sign-dialog">Зарегистрироваться</a>
-						</div>
+
 					</div>
 				</div>
 			</div>
 		</div>
 		<div class="container">
-			<div ng-view>
-				
+			<div ui-view="gallery">
+				<div class="row">
+					<div class="col-xs-12" ng-hide="signIn">
+						<div ng-show="curPath == 'home'" id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+							<ol class="carousel-indicators">
+								<li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+								<li data-target="#carousel-example-generic" data-slide-to="1"></li>
+								<li data-target="#carousel-example-generic" data-slide-to="2"></li>
+								<li data-target="#carousel-example-generic" data-slide-to="3"></li>
+							</ol>
+							<div class="carousel-inner">
+								<div class="item active">
+									<img src="../img/run_man_1920x1080.jpg" alt="run men">
+									<div class="carousel-caption">
+										<h1>To keep a journal</h1>
+									</div>
+								</div>
+								<div class="item ">
+									<img src="../img/img02.jpg" alt="images">
+									<div class="carousel-caption">
+										<h1>Let`s go training</h1>
+									</div>
+								</div>
+								<div class="item">
+									<img src="../img/img03.jpg" alt="images">
+									<div class="carousel-caption">
+										<h1>I will help you</h1>
+									</div>
+								</div>
+								<div class="item ">
+									<img src="../img/img04.jpg" alt="images">
+									<div class="carousel-caption">
+										<h1>Become stronger</h1>
+									</div>
+								</div>
+							</div>
+							<a class="left carousel-control" href="#carousel-example-generic" data-slide="prev">
+							<span class="glyphicon glyphicon-chevron-left"></span>
+							</a>
+							<a class="right carousel-control" href="#carousel-example-generic" data-slide="next">
+							<span class="glyphicon glyphicon-chevron-right"></span>
+							</a>
+						</div>
+					</div>
+				</div>
+				<div class="row" ng-show="curPath == 'home'" >
+					<div class="col-xs-6 col-xs-offset-3 reg-btn" ng-hide="signIn">
+						<a href="#" class="btn btn-info" data-toggle="modal" data-target="#sign-dialog">Зарегистрироваться</a>
+					</div>
+				</div>
 			</div>
 		</div>
+
 	<!-- Others JS Files -->
 	<script src="libs/jquery/jquery.js"></script>
 	<script src="libs/bootstrap/js/bootstrap.js"></script>
-	<script src="libs/bootstrap-material-design/js/ripples.js"></script>
+	<!-- <script src="libs/bootstrap-material-design/js/ripples.js"></script> -->
 	<script src="libs/bootstrap-material-design/js/material.js"></script>
+	<!-- Firebase -->
+	<script src="https://www.gstatic.com/firebasejs/live/3.0/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/live/3.0/firebase-auth.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/ui/0.4.0/firebase-ui-auth.js"></script>	
 	<!-- AngularJs vDependencies -->
 	<script src="libs/angular/angular.js"></script>
 	<script src="libs/angular/angular-route.js"></script>
@@ -138,9 +136,11 @@
 	<script src="libs/angular/angular-cookies.js"></script>
 	<script src="https://www.youtube.com/iframe_api"></script>
 	<script src="libs/angular/angular-youtube-embed.js"></script>
-	<script src="libs/angular/Chart.min.js"></script>
+	<script src="libs/angular/Chart.js"></script>
 	<script src="libs/angular/angular-chart.min.js"></script>
 	<script src="libs/angular/angular-ui-router.min.js"></script>
+	<script src="libs/angular/angular-local-storage.min.js"></script>
+	<script src="libs/angular/angular-base64.min.js"></script>
 	<!-- Our JS App Fies -->
 	<script src="app/app.js"></script>
 	
@@ -153,19 +153,20 @@
 				</div>
 				<div class="modal-body">
 					<form role="form" name="loginForm">
-						<div class="form-group">
-							<label for="m-email">Email</label>
-							<input type="email" class="form-control" id="m-email" placeholder="Введите ваш email" ng-model="ac.credentials.email">
+						<div class="form-group label-floating is-empty">
+							<label for="m-email" class="control-label">Email</label>
+							<input type="email" class="form-control" id="m-email" ng-model="ac.credentials.email">
 						</div>
-						<div class="form-group">
-							<label for="m-pass">Пароль</label>
-							<input type="password" class="form-control" id="m-pass" placeholder="Введите ваш пароль" ng-model="ac.credentials.password">
+						<div class="form-group label-floating is-empty">
+							<label for="m-pass" class="control-label">Пароль</label>
+							<input type="password" class="form-control" id="m-pass" ng-model="ac.credentials.password">
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
-							<button type="submit" class="btn btn-primary" ng-click="ac.login()">Войти</button>
-							<button type="submit" class="btn btn-primary" ng-click="ac.googleLogin()">Google</button>
-							<button type="submit" class="btn btn-primary" ng-click="ac.facebookLogin()" data-dismiss="modal">Facebook</button>
+							<button type="submit" class="btn btn-primary" data-dismiss="modal" ng-click="ac.login()">Войти</button>
+							<button type="submit" class="btn btn-danger" data-dismiss="modal" ng-click="ac.googleLogin()">Google</button>
+							<button type="submit" class="btn btn-info" data-dismiss="modal" ng-click="ac.facebookLogin()" data-dismiss="modal">Facebook</button>
+							<button type="submit" class="btn btn-warning"  data-dismiss="modal" ng-click="ac.gitHubLogin()" data-dismiss="modal">GitHub</button>
 						</div>
 					</form>
 				</div>
@@ -181,21 +182,21 @@
 				</div>
 				<div class="modal-body">
 					<form role="form" ng-submit="ac.register()">
-						<div class="form-group">
-							<label for="f-name">Firstname</label>
-							<input type="text" class="form-control" id="f-name" placeholder="Firstname" ng-model="ac.newUser.firstname">
+						<!-- <div class="form-group label-floating is-empty">
+							<label for="f-name" class="control-label">Firstname</label>
+							<input type="text" class="form-control" id="f-name" ng-model="ac.newUser.firstname">
 						</div>
-						<div class="form-group">
-							<label for="l-name">Lastname</label>
-							<input type="text" class="form-control" id="l-name" placeholder="Lastname" ng-model="ac.newUser.lastname">
+						<div class="form-group label-floating is-empty">
+							<label for="l-name" class="control-label">Lastname</label>
+							<input type="text" class="form-control" id="l-name" ng-model="ac.newUser.lastname">
+						</div> -->
+						<div class="form-group label-floating is-empty">
+							<label for="r-email" class="control-label">Email</label>
+							<input type="email" class="form-control" id="r-email" ng-model="ac.newUser.email">
 						</div>
-						<div class="form-group">
-							<label for="r-email">Email</label>
-							<input type="email" class="form-control" id="r-email" placeholder="Введите ваш email" ng-model="ac.newUser.email">
-						</div>
-						<div class="form-group">
-							<label for="r-pass">Password</label>
-							<input type="password" class="form-control" id="r-pass" placeholder="Введите ваш пароль" ng-model="ac.newUser.password">
+						<div class="form-group label-floating is-empty">
+							<label for="r-pass" class="control-label">Password</label>
+							<input type="password" class="form-control" id="r-pass" ng-model="ac.newUser.password">
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>

@@ -5,28 +5,25 @@
 		.module('GymJournal.login', [
 				'ngRoute',
 				'firebase'
-
 			])
 		.constant('SERVER_URL')
 		.controller('AuthCtrl', AuthController)
 		.controller('StatusCtrl', StatusController)
-		//.factory('Auth', AuthFactory)
 
-
-function StatusController($scope, $rootScope, $log, authentication, FIREBASE_URL, $firebaseObject, $firebaseArray, gymfirebase){
+function StatusController($scope, $rootScope, $log, authentication, gymfirebase, $state, getCurrentUser){
 
 	var vm = this;
 
-	var ref = new Firebase(FIREBASE_URL);
-	var authData = ref.getAuth();
-	if(authData !== null){
-		var curUserUid = authentication.getAuth().uid;
-		var userObj = gymfirebase.getCurUser(curUserUid);
-		var curUser = $firebaseObject(userObj);
-		curUser.$loaded().then(function(){ //когда пользователь загружен
-			vm.userData  = authData; 
-		});
-	}
+	vm.userData = {}
+
+	getCurrentUser.getUserInfo()
+	.then(function(data) {
+		vm.userData = data;
+		$rootScope.userData = data;
+		$rootScope.signIn = true;
+
+	});
+	//console.log($rootScope);
 	vm.getEmail = function(){
 		return authentication.getEmail();
 	}
@@ -36,14 +33,24 @@ function StatusController($scope, $rootScope, $log, authentication, FIREBASE_URL
 	}
 
 	vm.logout = function(){
-		authentication.logout();
+		authentication.signOut();
+		//vm.userData = null;
+		$rootScope.signIn = false;
+		$rootScope.userData = null;
+		$state.go('home');
 	}
 
 }
 
-function AuthController($scope, $log, $cookies, authentication){
+function AuthController($scope, $rootScope, $log, $cookies, authentication, getCurrentUser){
 
 	var vm = this;
+
+	vm.login = login;
+	vm.register = register;
+	vm.googleLogin = googleLogin;
+	vm.facebookLogin = facebookLogin;
+	vm.gitHubLogin = gitHubLogin;
 
 	vm.credentials = {
 		email: null,
@@ -51,80 +58,83 @@ function AuthController($scope, $log, $cookies, authentication){
 	}
 
 	vm.newUser = {
-		firstname: null,
-		lastname: null,
 		email: null,
 		password: null
 	}
 	
-	vm.login = function(){
+	function login() {
+
 		authentication.login(vm.credentials);
+
+		getCurrentUser.getUserInfo()
+		.then(function(data) {
+			vm.userData = data;
+			console.log(100500);
+			console.log(data);
+			$rootScope.userData = data;
+			$rootScope.signIn = true;
+
+		});
 	}
 
-	vm.register = function(){
+	function register() {
 		authentication.register(vm.newUser);
 	}
 
-	vm.googleLogin = function(){
-		authentication.googleLogin();
+	function googleLogin() {
+		authentication.googleLogin()
+		.then( function(user) {
+
+			$rootScope.userData = getUserInfo(user);
+			$rootScope.signIn = true;
+			
+		});
 	}
 
-	vm.facebookLogin = function(){
-		authentication.facebookLogin();
-	}
-	/*vm.login = function(){
-		$log.debug('Login');
-		Auth.login(vm.credentials.username, vm.credentials.password);
-	}
+	function facebookLogin() {
+		authentication.facebookLogin()
+		.then( function(user) {
 
-	vm.username = function(){
-		return Auth.getUsername();
-	}*/
-}
+			$rootScope.userData = getUserInfo(user);
+			$rootScope.signIn = true;
 
-/*function AuthFactory($http, SERVER_URL){
-	var auth = {};
-
-	auth.login = function(_username, _password){
-		var auth_url = SERVER_URL;
-		return $http.get(auth_url)
-			.then(function(responce){
-				if(responce.data.status == 'success'){
-					$cookies.put('auth_token', responce.data.auth_token);
-					$cookies.put('user_id', responce.data.id);
-					$cookies.put('user_name', _username);
-					auth.user = {
-						username: _username,
-						id: responce.data.id
-					}
-				}
-				$log.debug('Loged in', responce);
-				
-			})
+		});
 	}
 
-	auth.getUsername = function(){
-		if(auth.user && auth.username){
-			return auth.user.username;
-				return null;
+	function gitHubLogin() {
+		authentication.gitHubLogin()
+		.then( function(user) {
+
+			$rootScope.userData = getUserInfo(user);
+			$rootScope.signIn = true;
+
+		});
+	}
+
+	function getUserInfo(user) {
+
+		var userObj = {}
+
+		if (user) {
+
+			if(user.providerData.length) {
+
+				if(user.providerData[0].providerId === 'password') {
+
+					userObj.data = user.providerData[0];
+					userObj.uid = user.uid;
+
+				} else {
+					userObj.data = user.providerData[0];
+				}	
+
+			}
+
 		}
+
+		return userObj.data;
 	}
-
-	auth.logout = function(){
-		return $http.get()
-			.then(function(responce){
-				if(responce.data.status == 'success'){
-					$cookies.remove('auth_token');
-					$cookies.remove('user_id');
-					$cookies.remove('user_name');
-					auth.user = null;
-				}
-
-			});
-	}
-
-	return auth;
-}*/
+}
 
 
 })();

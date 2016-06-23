@@ -1,18 +1,19 @@
-<form class="form-horizontal" ng-submit="vm.updateUser()">
+<form ng-submit="pc.updateUser()">
 	<div class="row">
 		<div class="col-xs-3">
 			<figure class="hold-img">
-				<img src="{{pc.userData.facebook.profileImageURL}}" alt="">
-				<img src="{{pc.userData.google.profileImageURL}}" alt="">
+				<img ng-src="{{userData.profileImageURL}}" alt="">
+				<img src="{{pc.user.image}}" alt="">
 			</figure>
 			
 				<fieldset>
-					<div class="form-group text-center ">
+					<div class="form-group text-center is-fileinput is-empty">
 			            <label for="inputFile" class="col-xs-12">Обновить фотографию</label>
 			            <div class="col-xs-12">
 			                <input type="text" readonly="" class="form-control floating-label" placeholder="Browse...">
-			                <input type="file" id="inputFile" multiple="" ng-model="vm.user.image">
+			                <input type="file" id="inputFile" multiple="" file-upload>
 			            </div>
+			            <a href="" class="btn btn-info" ng-if="pc.isImage" ng-click="pc.updateImage()">Upload</a>
 			        </div>
 		        </fieldset>
 			<!-- </form> -->
@@ -22,41 +23,29 @@
 				<!-- <form class="form-horizontal"> -->
 				    <fieldset>
 				        <legend>Личные данные</legend>
-				        <div class="form-group">
-				            <label for="inputName" class="col-xs-2 control-label">Имя</label>
-				            <div class="col-xs-10">
-				                <input type="text" class="form-control" id="inputName" placeholder="{{vm.userData.name}}" ng-model="vm.user.name">
-				            </div>
+				        <div class="form-group label-floating">
+				            <label for="inputName" class="control-label">Имя</label>
+				            <input type="text" class="form-control" id="inputName" ng-model="pc.user.name">
 				        </div>
-				        <div class="form-group">
-							<label for="inputLast" class="col-xs-2 control-label">Фамилия</label>
-				            <div class="col-xs-10">
-				                <input type="text" class="form-control" id="inputLast" placeholder="{{vm.userData.lastname}}" ng-model="vm.user.lastname">
-				            </div>
+				        <div class="form-group label-floating">
+							<label for="inputLast" class="control-label">Фамилия</label>
+				            <input type="text" class="form-control" id="inputLast" ng-model="pc.user.lastname">
 				        </div>
-				        <div class="form-group">
-							<label for="inputMail" class="col-xs-2 control-label">Почта</label>
-				            <div class="col-xs-10">
-				                <input type="text" class="form-control" id="inputMail" placeholder="{{vm.userData.email}}" ng-model="vm.user.email">
-				            </div>
+				        <div class="form-group label-floating">
+							<label for="inputMail" class="control-label">Почта</label>
+				            <input type="text" class="form-control" id="inputMail" ng-model="pc.user.email">
 				        </div>
-				        <div class="form-group">
-							<label for="inputHeight" class="col-xs-2 control-label">Рост</label>
-				            <div class="col-xs-10">
-				                <input type="text" class="form-control" id="inputHeight" placeholder="{{vm.userData.height}}" ng-model="vm.user.height">
-				            </div>
+				        <div class="form-group label-floating">
+							<label for="inputHeight" class="control-label">Рост</label>
+				            <input type="text" class="form-control" id="inputHeight" ng-model="pc.user.height">
 				        </div>
-				        <div class="form-group">
-							<label for="inputWeight" class="col-xs-2 control-label">Вес</label>
-				            <div class="col-xs-10">
-				                <input type="text" class="form-control" id="inputWeight" placeholder="{{vm.userData.weight}}" ng-model="vm.user.weight">
-				            </div>
+				        <div class="form-group label-floating">
+							<label for="inputWeight" class="control-label">Вес</label>
+				            <input type="text" class="form-control" id="inputWeight" ng-model="pc.user.weight">
 				        </div>
-				        <div class="form-group">
-							<label for="inputBirth" class="col-xs-2 control-label">Возвраст</label>
-				            <div class="col-xs-10">
-				                <input type="text" class="form-control" id="inputBirth" placeholder="{{vm.userData.age}}" ng-model="vm.user.age">
-				            </div>
+				        <div class="form-group label-floating">
+							<label for="inputBirth" class="control-label">Возвраст</label>
+				            <input type="text" class="form-control" id="inputBirth" ng-model="pc.user.age">
 				        </div>
 				        <div class="form-group">
 				            <div class="col-xs-12 text-center">

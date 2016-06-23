@@ -2,23 +2,13 @@
 'use strict'
 angular
 	.module('GymJournal.profile', ['ui.router'])
-	.config(ProfileConfig)
 	.controller('ProfileCtrl', ProfileCtrl);
 
-	ProfileCtrl.$inject = ['$scope', '$rootScope', 'authentication', 'gymfirebase', '$log', '$firebaseObject', 'FIREBASE_URL'];
+	ProfileCtrl.$inject = ['$scope', '$rootScope', 'authentication', 'gymfirebase', '$log', 'getCurrentUser'];
 
-	function ProfileCtrl($scope, $rootScope, authentication, gymfirebase, $log, $firebaseObject, FIREBASE_URL){
+	function ProfileCtrl($scope, $rootScope, authentication, gymfirebase, $log, getCurrentUser){
 		
 		var vm = this;
-
-		$rootScope.curPath = 'profile';
-
-		var curUserUid = authentication.getAuth().uid;
-
-		 gymfirebase.getUsers().then(function(_data){
-		 	console.log(_data);
-		 	vm.users = _data;
-		 });
 
 		vm.user = {
 			name: null,
@@ -29,38 +19,69 @@ angular
 			image: null,
 			age: null
 		}
-		
-		vm.getUsername = function(){
-			return authentication.getUsername();
+
+		vm.imagePath = '';
+		vm.imageData = null;
+		vm.isImage = false;
+
+		vm.updateUser = updateUser;
+		vm.updateImage = updateImage;
+
+		getUserInfo();
+
+		$scope.$on('changed-file', function(e, data) {
+			
+			vm.imageData = data;
+
+			var reader = new window.FileReader();
+				reader.readAsDataURL(data); 
+				reader.onloadend = function() {
+          			vm.user.image = reader.result;
+			  }
+
+			vm.isImage = true;
+
+			$scope.$apply();
+		});
+
+
+
+		function getUserInfo() {
+
+			getCurrentUser.getUserDataById()
+			.then(function(data) {
+
+				if(data.accessToken){
+					vm.user.name = data.firstName;
+					vm.user.lastname = data.lastName;
+					vm.user.image = data.avatar;
+				}else{
+					vm.user.name = data.name;
+					vm.user.lastname = data.lastname;
+					vm.user.email = data.email;
+					vm.user.height = data.height;
+					vm.user.weight = data.weight;
+					vm.user.age = data.age;
+					vm.user.image = data.image;
+				}
+				
+			});
+
 		}
 
-		var ref = new Firebase(FIREBASE_URL);
-		var authData = ref.getAuth();
-		console.log(authData);
-		if(authData !== null){
-			var curUserUid = authentication.getAuth().uid;
-			var userObj = gymfirebase.getCurUser(curUserUid);
-			var curUser = $firebaseObject(userObj);
-			curUser.$loaded().then(function(){ //когда пользователь загружен
-				vm.userData  = authData; 
+		function updateImage() {
+			getCurrentUser.saveUserImage(vm.imageData)
+			.then(function(url) {
+				vm.isImage = true;
+				vm.imagePath = url;
 			});
 		}
-		
+
 		//изменяем данные пользователя, на вход Uid в БД и данные из формы
-		vm.updateUser = function(){
-			return gymfirebase.updateUser(curUserUid, vm.user);
+		function updateUser(){
+			console.log($rootScope.userData.uid, vm.user);
+			getCurrentUser.updateUserInfo($rootScope.userData.uid, vm.user);
 		}
-		
-
 	}
 
-	function ProfileConfig($stateProvider){
-		$stateProvider
-			.state('profile', {
-				url: '/profile',
-				templateUrl: 'app/profile/profile.html',
-				controller: 'ProfileCtrl',
-				controllerAs: 'pc'
-			});
-	}
 })();

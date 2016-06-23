@@ -1,38 +1,16 @@
 ;(function(){
-'use strict'
+	'use strict';
 
-angular
-	.module('GymJournal.about', ['ui.router'])
-	.config(['$stateProvider', configAbout])
-	.controller('AboutCtrl', AboutCtrl);
-	
-	AboutCtrl.$inject = ['$scope', '$rootScope', 'gymfirebase'];
-	
-	function AboutCtrl($scope, $rootScope, gymfirebase){
+	angular
+		.module('GymJournal.about', ['ui.router'])
+		.controller('AboutCtrl', AboutCtrl);
+		
+		AboutCtrl.$inject = ['$scope', '$rootScope'];
+		
+		function AboutCtrl($scope, $rootScope){
 
-		var vm = this;
-
-		gymfirebase.getUsers().then(function(_data){
-			vm.users = _data;
-		});
-
-		vm.user = {
-			name: null,
-			age: 0
+			var vm = this;
+			$rootScope.curPath = 'about';
 		}
-
-		vm.addUser = function(){
-		 	gymfirebase.addUser(vm.user);
-		}
-	}
 	
-	function configAbout($stateProvider){
-		$stateProvider
-			.state('about', {
-				url: '/about',
-				templateUrl: 'app/about/about.html',
-				controller: 'AboutCtrl',
-				controllerAs: 'ac'
-			});
-	}
 })();

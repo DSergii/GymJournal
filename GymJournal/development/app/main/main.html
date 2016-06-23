@@ -1,35 +1,61 @@
-<div class="holder" ng-show="signedIn()">
-	<div class="ex-box" ng-repeat="ex in mc.exer">
-		<a href="" ng-click="mc.bool = true"><span>{{ex.data.title}}</span></a>
+<div class="row" ng-show="signIn">
+	<div class="col-md-4">
+		<div class="holder">
+			<h1>Выберите упражнение</h1>
+			<div class="ex-box" ng-repeat="(key, value) in mc.exersises" >
+				<a href="" id="{{key}}" ng-click="mc.choiseExersise($event)" >{{value}}</a>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-8">
+		<div class="hold-form">
+			<div class="row">
+				<form >
+					<fieldset>
+						<div class="wrap" ng-show="mc.isShow" >
+							<div class="col-xs-6">
+								<h2>Количество подходов</h2>
+								<div class="form-group label-floating is-empty">
+						            <label class="control-label">Подходы</label>
+						            <input type="text" class="form-control" ng-model="mc.exItem.fit">
+						        </div>
+							</div>
+							<div class="col-xs-6">
+								<h2>Количество повторений</h2>
+								<div class="form-group label-floating is-empty">
+						            <label class="control-label">Повторения</label>
+						            <input type="text" class="form-control" ng-model="mc.exItem.iteration">
+						        </div>
+							</div>
+							<div class="col-xs-12">
+								<a class="btn btn-info" ng-click="mc.saveResult()" >Сохранить</a>
+							</div>
+						</div>
+						<div class="wrap" ng-show="mc.isRun" >
+							<div class="col-xs-6">
+								<h2>Дистанция</h2>
+								<div class="form-group label-floating is-empty">
+						            <label class="control-label">Дистанция в метрах</label>
+						            <input type="text" class="form-control" ng-model="mc.exItem.distance">
+						        </div>
+							</div>
+							<div class="col-xs-6">
+								<h2>Время</h2>
+								<div class="form-group label-floating is-empty">
+						            <label class="control-label">Время</label>
+						            <input type="text" class="form-control" ng-model="mc.exItem.time">
+						        </div>
+							</div>
+							<div class="col-xs-12">
+								<a class="btn btn-info" ng-click="mc.saveResult()" >Сохранить</a>
+							</div>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+			
+		</div>
 	</div>
 </div>
-<div ng-show="mc.bool" class="count">
-	<div class="hold-form">
-		<form class="bs-component" name="countForm">
-			<div class="form-group">
-			  <label class="control-label" for="addon1">Задайте количество подходов</label>
-			  <div class="input-group">
-			  	 <span class="input-group-addon"><i class="material-icons">fitness_center</i></span>
-			    <input id="addon1" class="form-control" type="text" ng-model="count">
-			    <span class="input-group-btn">
-			        <button class="btn btn-primary" type="button" ng-click="mc.addCount(count)">Задать</button>
-			    </span>
-			  </div>
-			</div>
-		</form>
-		<form ng-if="mc.flag">
-			<div class="hold-form form-group">
-				<div class="form-group label-floating" ng-repeat="count in mc.box">
-				  <label class="control-label" for="addon2">Подход {{count}}</label>
-				  <div class="input-group">
-				    <input id="addon2" class="form-control" type="text" name="access{{count}}">
-				    <span class="input-group-btn">
-				        <i class="material-icons">fitness_center</i>
-				    </span>
-				  </div>
-				</div>
-				<button class="btn btn-primary" type="submit">Сохранить</button>
-			</div>
-		</form>
-	</div>
-</div>
+
+

@@ -5,39 +5,61 @@ angular
 	.module('GymJournal.exercises.srv', ['firebase'])
 	.service('exercisessrv', exercisessrv);
 
-	exercisessrv.$inject = ['FIREBASE_URL', '$firebaseArray', '$firebaseObject', 'authentication'];
+	exercisessrv.$inject = ['$q', '$rootScope'];
 
-	function exercisessrv(FIREBASE_URL, $firebaseArray, $firebaseObject, authentication){
+	function exercisessrv($q, $rootScope){
 
-		var exData = this;
+		var rootRef = firebase.database().ref();
 
-		var ref = new Firebase(FIREBASE_URL);
-
-		var exRef = ref.child('exercises');
-
-		var refObj = $firebaseObject(ref); //$firebaseObject - не позволяет работать с ng-repeat
-
-		var exArr = $firebaseArray(exRef); //$firebaseArray - позволяет работать с ng-repeat
-		//console.log(refObj.child('exersises'));
-		this.addExercise = function(_exersises, _id){
-			var exLength = $firebaseObject(ref.child('OptionsEx').child('exLength'));
-			exLength.$loaded(function(){
-				var eLength = exLength.$value++;
-				exLength.$save();
-				exRef.child(eLength).set({"data" : _exersises, "user" : _id});
-			});
-			//exRef.child(_exersises).set(_id);
-			//var exLength = $firebaseObject(ref.child())...2015.06.13_2 1:51:31
-			//закончил на 1:25
-		}
+		var deferred = $q.defer();
+		
+		var regexp = /\d+/g;
+		
+		
 
 		this.getExercise = function(){
-			return exArr.$loaded(function(_data){
-				return _data;
+			rootRef.on('value', function(snapshot) {
+				
+				var exercises = snapshot.val().exercises;
+				//console.log(exercises);
+				//console.log('USER DATA ', $rootScope.userData);
+				
+				deferred.resolve( checkUser( exercises, $rootScope.userData ) );
+
 			});
-		}		
-			//	});
-			//return exArr.child(_data); //т.к. загрузка асинхронная, то $loaded возвращает промис
+
+			return deferred.promise;
+		}
+
+		function checkUser(exercises, user) {
+
+			var exercisesData = {};
+
+			var count = 0;
+
+			for( var key in exercises) {
+
+				if(exercises.hasOwnProperty(key)) {
+
+					if($rootScope.userData !== undefined && user !== null ){
+
+						if(user.providerId === 'password' && exercises[key].user === $rootScope.userData.uid){
+							exercisesData[count] = exercises[key].data;
+							count++;
+						}
+
+						if(user.providerId !== 'password' && exercises[key].user.match(regexp)[0] === $rootScope.userData.uid) {
+							exercisesData[count] = exercises[key].data;
+							count++;
+						}
+					}
+				}
+
+			}
+
+			return exercisesData;
+		}
+
 }
 	
 

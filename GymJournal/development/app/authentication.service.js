@@ -7,15 +7,142 @@
 			])
 		.factory('authentication', AuthenticationFactory)
 
+		function AuthenticationFactory( $rootScope, $log, $q ){
 
+			var deferred = $q.defer();
 
+			var API = {
+				login: login,
+				signIn: signIn,
+				signOut: signOut,
+				googleLogin : googleLogin,
+				facebookLogin: facebookLogin,
+				gitHubLogin: gitHubLogin
+			}
 
-		function AuthenticationFactory($firebaseAuth, $firebaseObject, $rootScope, FIREBASE_URL, $log ){
+			return API;
+
+			function login(loginData) {
+
+				firebase.auth().signInWithEmailAndPassword(loginData.email, loginData.password).catch(function(error) {
+
+				  	var errorCode = error.code;
+				  	var errorMessage = error.message;
+				  	$log.error('login failure: ', errorMessage);
+
+				});
+			}
+
+			function signIn(signInData) {
+
+				firebase.auth().createUserWithEmailAndPassword(signInData.email, signInData.password).catch(function(error) {
+
+					var errorCode = error.code;
+					var errorMessage = error.message;
+					$log.error('signIn failure: ', errorMessage);
+
+				});
+
+			}
+
+			function signOut() {
+
+				firebase.auth().signOut().then(function() {
+					$log.info('signOut successful');
+				}, function(error) {
+				  	$log.error('signOut failure: ', error);
+				});
+
+			}
+
+			function googleLogin() {
+
+				var googleProvider = new firebase.auth.GoogleAuthProvider();
+				googleProvider.addScope('https://www.googleapis.com/auth/plus.login');
+
+				firebase.auth().signInWithPopup(googleProvider).then(function(result) {
+
+					var token = result.credential.accessToken;
+					var user = result.user;
+					$log.info('token ', token);
+					$log.info('user ', user);
+					deferred.resolve( user );
+
+				}).catch(function(error) {
+
+				  var errorCode = error.code;
+				  var errorMessage = error.message;
+				  var email = error.email;
+				  var credential = error.credential;
+				  $log.error('errorMessage', errorMessage);
+				  deferred.reject( error );
+
+				});
+
+				return deferred.promise;
+			}
+
+			function facebookLogin() {
+
+				var facebookProvider = new firebase.auth.FacebookAuthProvider();
+				facebookProvider.addScope('public_profile');
+
+				firebase.auth().signInWithPopup(facebookProvider).then(function(result) {
+
+				  	var token = result.credential.accessToken;
+				  	var user = result.user;
+				  	$log.info('token ', token);
+					$log.info('user ', user);
+					deferred.resolve( user );
+
+				}).catch(function(error) {
+
+				  	var errorCode = error.code;
+				  	var errorMessage = error.message;
+				  	var email = error.email;
+				  	var credential = error.credential;
+				  	$log.error('errorMessage', errorMessage);
+				  	deferred.reject( error );
+
+				});
+
+				return deferred.promise;
+			}
+
+			function gitHubLogin() {
+
+				var gitHubProvider = new firebase.auth.GithubAuthProvider();
+				gitHubProvider.addScope('user');
+
+				firebase.auth().signInWithPopup(gitHubProvider).then(function(result) {
+
+				  	var token = result.credential.accessToken;
+				  	var user = result.user;
+				  	$log.info('token ', token);
+					$log.info('user ', user);
+					deferred.resolve( user );
+
+				}).catch(function(error) {
+
+				  	var errorCode = error.code;
+				  	var errorMessage = error.message;
+				  	var email = error.email;
+				  	var credential = error.credential;
+				  	$log.error('errorMessage', errorMessage);
+				  	deferred.reject( error );
+
+				});
+
+				return deferred.promise;
+
+			}
 
 			// получение ссылки на нашу БД 
-			var ref = new Firebase(FIREBASE_URL)
+			//var ref = new Firebase(FIREBASE_URL)
 
-			var auth = $firebaseAuth(ref);
+			//var auth = $firebaseAuth(ref);
+
+			/*var auth = firebase.auth();
 
 			function authCallback(authData){
 				if(authData){
@@ -27,15 +154,15 @@
 				}else{
 					$rootScope.currentUser = null;
 				}	
-			}
+			}*/
 			/*
 				когда пользователь залогинен firebase генерирует событие onAuth 
 				которое обрабатывается ф-цией authCallback, в которую приходит
 				авторизационные данные
 			*/
-			ref.onAuth(authCallback); 
+			//ref.onAuth(authCallback); 
 
-			function authHandle(error, authData){
+			/*function authHandle(error, authData){
 				if(error){
 					console.log('Auth failed!', error);
 				}else{
@@ -52,8 +179,10 @@
 					console.log('social-login failed!', error);
 				}else{
 					console.log('social-login successfuly!', authData);
+					$rootScope.$broadcast('user-login', authData);
 					var userRef = ref.child('users').child(authData.google.id);
 					var user = $firebaseObject(userRef);
+
 					user.$loaded(function(){ 
 						if(user.email){
 							userRef.child('lastActivity').set(Firebase.ServerValue.TIMESTAMP);
@@ -80,6 +209,7 @@
 					console.log('facebook social-login failed!', error);
 				}else{
 					console.log('facebook social-login successfuly!', authData);
+					$rootScope.$broadcast('user-login', authData);
 					var userRef = ref.child('users').child(authData.facebook.id);
 					var user = $firebaseObject(userRef);
 
@@ -109,7 +239,7 @@
 				googleLogin: function(_user, authHndl){
 					
 					authHndl = typeof authHndl !== 'undefined' ? authHndl : socialAuthHandle;
-					console.log(authHndl);
+					//console.log(authHndl);
 					ref.authWithOAuthPopup("google", authHndl);
 				},
 
@@ -185,7 +315,7 @@
 				return authObj.signedIn();
 			}
 
-			return authObj;
+			return authObj;*/
 
 		}
 		

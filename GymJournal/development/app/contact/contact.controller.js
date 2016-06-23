@@ -3,7 +3,6 @@
 
 angular
 	.module('GymJournal.contact', ['ngRoute'])
-	.config( configContact )
 	.controller('ContactCtrl', ContactCtrl);
 	
 	ContactCtrl.$inject = ['$scope', '$rootScope'];
@@ -12,14 +11,5 @@ angular
 		$scope.title = 'Contact';
 		$rootScope.curPath = 'contact';
 	}
-	
-	function configContact($stateProvider){
-		$stateProvider
-			.state('contact', {
-				url: '/contact',
-				templateUrl: 'app/contact/contact.html',
-				controller: 'ContactCtrl',
-				controllerAs: 'vm'
-			});
-	}
+
 })();
