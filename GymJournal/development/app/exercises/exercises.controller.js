@@ -20,11 +20,10 @@ angular
 		}
 
 		vm.addExercise = function(){
-			return exercisessrv.addExercise(vm.exercises, vm.authInfo.uid);
+			return exercisessrv.addExercise(vm.exercises);
 		}
 
 		exercisessrv.getExercise().then(function(_data){
-			console.log(_data);
 			vm.exer = _data;
 		});
 		

@@ -17,7 +17,8 @@
 				signOut: signOut,
 				googleLogin : googleLogin,
 				facebookLogin: facebookLogin,
-				gitHubLogin: gitHubLogin
+				gitHubLogin: gitHubLogin,
+				register: register
 			}
 
 			return API;
@@ -69,7 +70,7 @@
 					deferred.resolve( user );
 
 				}).catch(function(error) {
-
+					$log.log(error)
 				  var errorCode = error.code;
 				  var errorMessage = error.message;
 				  var email = error.email;
@@ -135,6 +136,24 @@
 
 				return deferred.promise;
 
+			}
+
+			function register(_user){ //создаем нового пользователя
+				var fireA = firebase.auth();
+				return fireA.createUserWithEmailAndPassword(_user.email, _user.password)
+					.then(function(userData){ // создаем запись в БД под нового п.
+				// var	userRef = ref.child('users').child(userData.uid);
+				// 	userRef.set({
+				// 		firstname: _user.firstname,
+				// 		lastname: _user.lastname,
+				// 		email: _user.email,
+				// 		date: Firebase.ServerValue.TIMESTAMP //дата регистрации
+				// 	});
+						return fireA.signInWithEmailAndPassword(_user.email, _user.password) //после регистрации сразу логинимся
+						.catch(function(error){
+						$log.error('Create user error -> ', error);
+						});
+					});
 			}
 
 			// получение ссылки на нашу БД 

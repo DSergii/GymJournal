@@ -16,16 +16,16 @@
 		<form role="form">
 			<div class="form-group label-floating is-empty">
 				<label for="f-name" class="control-label">Название упражнения</label>
-				<input type="text" class="form-control" id="f-name" ng-model="ec.exercises.title">
+				<input type="text" class="form-control" id="f-name" ng-model="ex.exercises.title">
 			</div>
 			<div class="form-group">
-				<textarea class="form-control" rows="3" placeholder="Описание упражнения" id="textArea" ng-model="ec.exercises.descr"></textarea>
+				<textarea class="form-control" rows="3" placeholder="Описание упражнения" id="textArea" ng-model="ex.exercises.descr"></textarea>
 			</div>
 			<div class="form-group label-floating is-empty">
 				<label for="f-name" class="control-label">Ссылка на видео</label>
-				<input type="text" class="form-control" id="link" ng-model="ec.exercises.link">
+				<input type="text" class="form-control" id="link" ng-model="ex.exercises.link">
 			</div>
-			<button type="button" class="btn btn-info" ng-click="ec.addExercise()">Добавить</button>
+			<button type="button" class="btn btn-info" ng-click="ex.addExercise()">Добавить</button>
 		</form>
 	</div>
 </div>

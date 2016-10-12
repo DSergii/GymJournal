@@ -29,13 +29,14 @@ $.material.init();
 		'LocalStorageModule'
 		])
 		.config(gymJournalConfig)
-		.run(runApplication)
+		.config(firebaseConfig)
+		//.run(runApplication)
 		.constant('FIREBASE_URL', 'https://gymjournal.firebaseio.com/')
 				
 	gymJournalConfig.$inject = ['$stateProvider', '$urlRouterProvider', 'localStorageServiceProvider'];
 
 
-	function runApplication($rootScope, $log, localStorageService){
+	function firebaseConfig(){
 
 		var config = {
 		  	apiKey: "AIzaSyCidue7FrttTuNhnVtknPjGcRfWb8inEas",

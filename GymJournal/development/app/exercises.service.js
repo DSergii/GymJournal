@@ -16,19 +16,26 @@ angular
 		var regexp = /\d+/g;
 		
 		
-
+		
 		this.getExercise = function(){
 			rootRef.on('value', function(snapshot) {
-				
+				//console.log(snapshot);
 				var exercises = snapshot.val().exercises;
-				//console.log(exercises);
+				//console.log('exercises ', exercises);
 				//console.log('USER DATA ', $rootScope.userData);
-				
 				deferred.resolve( checkUser( exercises, $rootScope.userData ) );
 
 			});
 
 			return deferred.promise;
+		}
+
+		this.addExercise = function(exercises) {
+			console.info('exercises', exercises);
+			firebase.database().ref('exercises').set({
+				data: exercises,
+				user: $rootScope.userData.uid
+			})
 		}
 
 		function checkUser(exercises, user) {
@@ -38,25 +45,21 @@ angular
 			var count = 0;
 
 			for( var key in exercises) {
-
+				console.info('exercises ', exercises);
 				if(exercises.hasOwnProperty(key)) {
 
-					if($rootScope.userData !== undefined && user !== null ){
+					//if($rootScope.userData !== undefined && user !== null ){
+						//console.info('100500 ', exercises[key].user,  user.uid);
+						if(exercises[key].user === user.uid){
 
-						if(user.providerId === 'password' && exercises[key].user === $rootScope.userData.uid){
 							exercisesData[count] = exercises[key].data;
 							count++;
 						}
-
-						if(user.providerId !== 'password' && exercises[key].user.match(regexp)[0] === $rootScope.userData.uid) {
-							exercisesData[count] = exercises[key].data;
-							count++;
-						}
-					}
+					//}
 				}
 
 			}
-
+			//console.info(exercisesData);
 			return exercisesData;
 		}
 
